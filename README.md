@@ -132,7 +132,7 @@ This course is designed for educational use. Feel free to:
 
 ## Credits
 
-- **Course Author**: Austin Amakye Ansah
+- **Course Author**: Coding Minds
 - **Technologies**: Next.js, Appwrite, Tailwind CSS, TypeScript
 - **Built with**: mdBook
 

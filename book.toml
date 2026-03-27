@@ -1,6 +1,6 @@
 [book]
 title = "AI Engineer (Full Stack) Course"
-authors = ["Austin Amakye Ansah"]
+authors = ["Coding Minds"]
 description = "16-session course teaching full-stack development with Next.js and Appwrite"
 language = "en"
 src = "src"

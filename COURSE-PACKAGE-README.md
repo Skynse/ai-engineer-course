@@ -261,7 +261,7 @@ MIT License - Free to use for teaching and learning!
 
 ## Credits
 
-- **Course Author**: Austin Amakye Ansah
+- **Course Author**: Coding Minds
 - **Technologies**: Next.js, Appwrite, Tailwind CSS, TypeScript
 - **Inspired by**: Real-world use cases from swapcard project
 
