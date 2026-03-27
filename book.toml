@@ -1,0 +1,27 @@
+[book]
+title = "AI Engineer (Full Stack) Course"
+authors = ["Austin Amakye Ansah"]
+description = "16-session course teaching full-stack development with Next.js and Appwrite"
+language = "en"
+src = "src"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+smart-punctuation = true
+mathjax-support = false
+additional-css = ["custom.css"]
+
+[output.html.playground]
+editable = true
+line-numbers = true
+
+[output.html.search]
+limit-results = 20
+teaser-word-count = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 2
+boost-paragraph = 1
+expand = true
+heading-split-level = 3

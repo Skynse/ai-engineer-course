@@ -1,0 +1,74 @@
+/* Custom styles for the course book */
+
+/* Improve readability */
+.content {
+  max-width: 900px;
+}
+
+/* Code blocks */
+pre {
+  background-color: #f6f8fa;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f6f8fa;
+  font-weight: bold;
+}
+
+/* Blockquotes */
+blockquote {
+  border-left: 4px solid #0366d6;
+  padding-left: 16px;
+  margin-left: 0;
+  color: #586069;
+}
+
+/* Checkboxes for homework */
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+/* Highlight important sections */
+.important {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 12px;
+  margin: 16px 0;
+}
+
+/* Tips */
+.tip {
+  background-color: #d4edda;
+  border-left: 4px solid #28a745;
+  padding: 12px;
+  margin: 16px 0;
+}
+
+/* Warnings */
+.warning {
+  background-color: #f8d7da;
+  border-left: 4px solid #dc3545;
+  padding: 12px;
+  margin: 16px 0;
+}
