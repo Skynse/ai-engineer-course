@@ -6,7 +6,7 @@ language = "en"
 src = "src"
 
 [output.html]
-default-theme = "light"
+default-theme = "ayu"
 preferred-dark-theme = "navy"
 smart-punctuation = true
 mathjax-support = false
