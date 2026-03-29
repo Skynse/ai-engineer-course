@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { course } from '../lib/course';
+import { course, withBase } from '../lib/course';
 
 const firstLesson = course.lessons[0];
 ---
@@ -17,7 +17,7 @@ const firstLesson = course.lessons[0];
 
       {firstLesson && (
         <a
-          href={`/lessons/${firstLesson.slug}/`}
+          href={withBase(`/lessons/${firstLesson.slug}/`)}
           style="display:inline-flex;align-items:center;justify-content:center;height:58px;padding:0 28px;border-radius:999px;background:#f3f4f6;color:#111827;font-weight:700;"
         >
           Continue
@@ -45,7 +45,7 @@ const firstLesson = course.lessons[0];
 
             <div class="lesson-list">
               {module.lessons.map((lesson) => (
-                <a class="lesson-row" href={`/lessons/${lesson.slug}/`}>
+                <a class="lesson-row" href={withBase(`/lessons/${lesson.slug}/`)}>
                   <div class="lesson-meta">
                     <span class="lesson-number">{lesson.number}</span>
                     <span class="lesson-title">{lesson.title}</span>

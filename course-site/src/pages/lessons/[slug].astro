@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { course, getAdjacentLessons, getLesson } from '../../lib/course';
+import { course, getAdjacentLessons, getLesson, withBase } from '../../lib/course';
 
 export function getStaticPaths() {
   return course.lessons.map((lesson) => ({
@@ -36,7 +36,7 @@ const { previous, next } = getAdjacentLessons(slug);
           <div class="sidebar-lessons">
             {module.lessons.map((entry) => (
               <a
-                href={`/lessons/${entry.slug}/`}
+                href={withBase(`/lessons/${entry.slug}/`)}
                 class:list={['sidebar-link', { active: entry.slug === lesson.slug }]}
               >
                 <span class="sidebar-link-num">{entry.number}</span>
@@ -67,14 +67,14 @@ const { previous, next } = getAdjacentLessons(slug);
 
       <nav class="lesson-nav">
         {previous ? (
-          <a href={`/lessons/${previous.slug}/`}>
+          <a href={withBase(`/lessons/${previous.slug}/`)}>
             <span class="lesson-nav-eyebrow">Previous</span>
             <span class="lesson-nav-title">{previous.title}</span>
           </a>
         ) : <div />}
 
         {next ? (
-          <a href={`/lessons/${next.slug}/`} style="text-align:right;">
+          <a href={withBase(`/lessons/${next.slug}/`)} style="text-align:right;">
             <span class="lesson-nav-eyebrow">Next</span>
             <span class="lesson-nav-title">{next.title}</span>
           </a>

@@ -45,6 +45,16 @@ const markdownFiles = import.meta.glob('../../../src/*.md', {
   eager: true,
 }) as Record<string, string>;
 
+const BASE_URL = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+
+export function withBase(path: string) {
+  if (!path.startsWith('/')) {
+    return path;
+  }
+
+  return BASE_URL ? `${BASE_URL}${path}` : path;
+}
+
 const highlighter = await createHighlighter({
   themes: ['github-dark'],
   langs: [
@@ -103,7 +113,7 @@ const courseSource: { title: string; subtitle: string; modules: ModuleSource[] }
       code: 'M1',
       title: 'Setup & Infrastructure',
       description: 'Environment setup, self-hosting, and the AI + CLI workflow used to scaffold backend structure safely.',
-      image: '/assets/screenshots/social/social1.png',
+      image: withBase('/assets/screenshots/social/social1.png'),
       lessons: [
         { slug: 'session-01', source: 'session-01.md', number: '1.1' },
         { slug: 'guide-self-hosting-appwrite', source: 'guide-self-hosting-appwrite.md', number: '1.2' },
@@ -115,7 +125,7 @@ const courseSource: { title: string; subtitle: string; modules: ModuleSource[] }
       code: 'M2',
       title: 'Core Full-Stack Patterns',
       description: 'CRUD, auth, profiles, relationships, uploads, permissions, and querying with Appwrite and Next.js.',
-      image: '/assets/screenshots/recipe/home1.png',
+      image: withBase('/assets/screenshots/recipe/home1.png'),
       lessons: [
         { slug: 'session-02', source: 'session-02.md', number: '2.1' },
         { slug: 'session-03', source: 'session-03.md', number: '2.2' },
@@ -133,11 +143,11 @@ const courseSource: { title: string; subtitle: string; modules: ModuleSource[] }
       code: 'M3',
       title: 'Demo Projects',
       description: 'Three larger demo apps that combine the earlier patterns into real product shapes instead of isolated lessons.',
-      image: '/assets/screenshots/kanban/kanban.png',
+      image: withBase('/assets/screenshots/kanban/kanban.png'),
       lessons: [
-        { slug: 'session-11', source: 'session-11.md', number: '3.1', image: '/assets/screenshots/kanban/kanban.png' },
-        { slug: 'session-12', source: 'session-12.md', number: '3.2', image: '/assets/screenshots/recipe/rice.png' },
-        { slug: 'session-13', source: 'session-13.md', number: '3.3', image: '/assets/screenshots/social/social2.png' },
+        { slug: 'session-11', source: 'session-11.md', number: '3.1', image: withBase('/assets/screenshots/kanban/kanban.png') },
+        { slug: 'session-12', source: 'session-12.md', number: '3.2', image: withBase('/assets/screenshots/recipe/rice.png') },
+        { slug: 'session-13', source: 'session-13.md', number: '3.3', image: withBase('/assets/screenshots/social/social2.png') },
         { slug: 'session-14', source: 'session-14.md', number: '3.4' },
       ],
     },
@@ -146,7 +156,7 @@ const courseSource: { title: string; subtitle: string; modules: ModuleSource[] }
       code: 'M4',
       title: 'Final Project',
       description: 'Planning, building, and presenting a complete static or full-stack project using the same systems taught throughout the course.',
-      image: '/assets/screenshots/social/social3.png',
+      image: withBase('/assets/screenshots/social/social3.png'),
       lessons: [
         { slug: 'session-15', source: 'session-15.md', number: '4.1' },
         { slug: 'session-16', source: 'session-16.md', number: '4.2' },
@@ -175,9 +185,17 @@ function extractExcerpt(markdown: string) {
 }
 
 function rewriteInternalLinks(html: string) {
-  return html.replace(/href="([^"]+)\.md"/g, (_match, href) => {
+  const rewrittenMarkdownLinks = html.replace(/href="([^"]+)\.md"/g, (_match, href) => {
     const cleaned = href.replace(/^\.?\//, '');
-    return `href="/lessons/${cleaned}/"`;
+    return `href="${withBase(`/lessons/${cleaned}/`)}"`;
+  });
+
+  return rewrittenMarkdownLinks.replace(/(src|href)="\/(?!\/)([^"]+)"/g, (_match, attr, path) => {
+    if (BASE_URL && path.startsWith(`${BASE_URL.replace(/^\//, '')}/`)) {
+      return `${attr}="/${path}"`;
+    }
+
+    return `${attr}="${withBase(`/${path}`)}"`;
   });
 }
 
