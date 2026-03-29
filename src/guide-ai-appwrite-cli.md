@@ -28,6 +28,85 @@ Do not use AI as a replacement for:
 - checking required fields and data types
 - verifying collection attributes after creation
 
+## Step 0: Install The Appwrite CLI
+
+Before using AI-generated commands, install the CLI on your machine.
+
+If you have Node.js installed, use:
+
+```bash
+npm install -g appwrite-cli
+```
+
+Then verify the install:
+
+```bash
+appwrite --version
+```
+
+If the command is not found, close and reopen your terminal, then try again.
+
+The standard Appwrite CLI flow in the official docs is:
+
+```bash
+appwrite login
+appwrite init project
+```
+
+If you are using a self-hosted Appwrite server, include the endpoint during login:
+
+```bash
+appwrite login --endpoint "http://localhost:8080/v1"
+```
+
+That interactive flow is valid and useful when you are learning the CLI itself.
+
+## Step 0.5: Point The CLI At Your Appwrite Project
+
+The CLI has to know which Appwrite server and project to talk to.
+
+For AI-assisted schema setup in this course, we prefer:
+
+- `appwrite client` to point the CLI at a specific endpoint and project
+- an Appwrite API key so AI-generated schema commands can run reliably
+
+That keeps the workflow consistent for both self-hosted Appwrite and Appwrite Cloud.
+
+Inside the Appwrite project setup flow, the API key work starts from the server integration section.
+
+![Appwrite server integration screen](/assets/docs/appwrite/integrate-server.png)
+
+For self-hosted Appwrite in this course, the endpoint is usually:
+
+```text
+http://localhost:8080/v1
+```
+
+For Appwrite Cloud, use:
+
+```text
+https://cloud.appwrite.io/v1
+```
+
+Then configure the CLI with your endpoint, project ID, and API key:
+
+```bash
+appwrite client \
+  --endpoint http://localhost:8080/v1 \
+  --project-id YOUR_PROJECT_ID \
+  --key YOUR_API_KEY
+```
+
+You only need to switch the endpoint if you are using Appwrite Cloud instead of self-hosting.
+
+You create that API key in the Appwrite Console under your project's API Keys section.
+
+![Appwrite project settings and API credentials](/assets/docs/appwrite/project-settings-project-id.png)
+
+![Appwrite API key creation screen](/assets/docs/appwrite/create-api-key.png)
+
+Give the key only the scopes you actually need for the setup commands you plan to run.
+
 ## Step 1: Write a Plain-Language Schema Brief
 
 Before prompting AI, write a short spec.
@@ -107,15 +186,7 @@ Recommended order:
 4. Create its attributes
 5. Verify
 6. Move on to the next collection
-
-Example CLI setup:
-
-```bash
-appwrite client \
-  --endpoint http://localhost:8080/v1 \
-  --project-id YOUR_PROJECT_ID \
-  --key YOUR_API_KEY
-```
+If the CLI is already configured, you do not need to rerun `appwrite client` before every command.
 
 ## Step 5: Verify After Every Batch
 

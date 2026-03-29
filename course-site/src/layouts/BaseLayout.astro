@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="/">Curriculum</a>
+          <div class="avatar-pill">
+            <span class="avatar-dot">AE</span>
+            <span>AI Engineer</span>
+          </div>
+        </div>
+      </header>
+      <slot />
+    </div>
+  </body>
+</html>

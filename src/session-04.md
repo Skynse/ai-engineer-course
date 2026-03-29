@@ -46,7 +46,7 @@ Update `src/lib/appwrite.ts`:
 import { Client, Databases, Account } from 'appwrite';
 
 const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1')
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
   .setProject('YOUR_PROJECT_ID');
 
 export const databases = new Databases(client);
@@ -63,7 +63,7 @@ Create `src/lib/auth.ts`:
 
 ```typescript
 import { account, databases, DATABASE_ID, USERS_COLLECTION } from './appwrite';
-import { ID } from 'appwrite';
+import { ID, Permission, Role } from 'appwrite';
 
 export async function signUp(email: string, password: string, name: string) {
   // Create the account
@@ -81,7 +81,12 @@ export async function signUp(email: string, password: string, name: string) {
       email,
       name,
       createdAt: new Date().toISOString()
-    }
+    },
+    [
+      Permission.read(Role.user(user.$id)),
+      Permission.update(Role.user(user.$id)),
+      Permission.delete(Role.user(user.$id))
+    ]
   );
   
   return user;
@@ -113,8 +118,9 @@ In Appwrite Console:
    - `name` (string, required)
    - `createdAt` (datetime, required)
 3. Set permissions:
-   - Users can read their own document
-   - Users can update their own document
+   - Collection Create: `users`
+   - Collection Read/Update/Delete: leave locked down if you are using document permissions
+   - Each user document is created with owner permissions in code
 
 ## Part 3: Auth Pages (45 min)
 

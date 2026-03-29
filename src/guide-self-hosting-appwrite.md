@@ -104,6 +104,12 @@ When Appwrite starts for the first time:
 3. Create a project for the course
 4. Copy the project ID
 
+The self-hosted console uses the same project creation and settings screens as Appwrite Cloud.
+
+![Appwrite create project screen](/assets/docs/appwrite/create-project.png)
+
+![Appwrite project settings showing the Project ID](/assets/docs/appwrite/project-settings-project-id.png)
+
 The repo currently uses this local endpoint pattern:
 
 ```bash

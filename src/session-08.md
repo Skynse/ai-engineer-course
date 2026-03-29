@@ -29,6 +29,8 @@ By the end of this session, students will:
    - Anyone can read files
    - Only authenticated users can create
 
+![Appwrite create bucket screen](/assets/docs/appwrite/create-bucket.png)
+
 ## Part 2: Upload Implementation (45 min)
 
 ### Update Appwrite Client
