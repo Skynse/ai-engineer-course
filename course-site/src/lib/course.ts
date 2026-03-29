@@ -1,7 +1,6 @@
 import matter from 'gray-matter';
 import { marked } from 'marked';
-import hljs from 'highlight.js';
-import { markedHighlight } from 'marked-highlight';
+import { createHighlighter } from 'shiki';
 
 type LessonSource = {
   slug: string;
@@ -46,27 +45,53 @@ const markdownFiles = import.meta.glob('../../../src/*.md', {
   eager: true,
 }) as Record<string, string>;
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
+const highlighter = await createHighlighter({
+  themes: ['github-dark'],
+  langs: [
+    'typescript',
+    'tsx',
+    'javascript',
+    'jsx',
+    'bash',
+    'shell',
+    'json',
+    'html',
+    'css',
+    'yaml',
+    'markdown',
+    'text',
+  ],
+});
 
-marked.use(
-  markedHighlight({
-    langPrefix: 'hljs language-',
-    highlight(code, lang) {
-      if (lang && hljs.getLanguage(lang)) {
-        return hljs.highlight(code, { language: lang }).value;
-      }
+const languageAliases: Record<string, string> = {
+  ts: 'typescript',
+  tsx: 'tsx',
+  js: 'javascript',
+  jsx: 'jsx',
+  sh: 'bash',
+  shell: 'bash',
+  bash: 'bash',
+  yml: 'yaml',
+  md: 'markdown',
+  text: 'text',
+  plaintext: 'text',
+};
 
-      return escapeHtml(code);
-    },
-  }),
-);
+const supportedLanguages = new Set(highlighter.getLoadedLanguages().map(String));
+
+const renderer = new marked.Renderer();
+renderer.code = ({ text, lang }) => {
+  const requested = (lang ?? '').trim().toLowerCase();
+  const language = languageAliases[requested] ?? requested;
+  const resolvedLanguage = supportedLanguages.has(language) ? language : 'text';
+
+  return highlighter.codeToHtml(text, {
+    lang: resolvedLanguage,
+    theme: 'github-dark',
+  });
+};
+
+marked.use({ renderer });
 
 const courseSource: { title: string; subtitle: string; modules: ModuleSource[] } = {
   title: 'AI Engineer: From Zero to Full-Stack',
