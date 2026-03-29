@@ -9,6 +9,8 @@ By the end of this session, students will:
 - Understand what Appwrite is and why we use it
 - Have a working development environment
 - Create their first Appwrite project
+- Understand the difference between Appwrite Cloud and self-hosted Appwrite
+- Know where AI fits into the workflow and where verification is required
 - Insert data into a database
 
 ## Part 1: Welcome & Overview (15 min)
@@ -36,19 +38,38 @@ We'll use AI tools to:
 - Generate boilerplate code
 - Debug errors
 - Explain complex concepts
+- Draft schemas and CLI commands
 - Speed up development
 
 **Pro tip**: Always review and understand AI-generated code before using it!
 
+### Cloud vs Self-Hosted Appwrite
+
+This course supports both:
+
+- **Appwrite Cloud**: fastest path for students who only want to learn the product workflow
+- **Self-hosted Appwrite**: best path for students who want a fully local full-stack setup
+
+If you want the local stack used in this repo, read [Guide: Self-Hosting Appwrite](guide-self-hosting-appwrite.md) before moving past setup.
+
+If you want to use AI to generate Appwrite schema commands safely, read [Guide: AI + Appwrite CLI Workflow](guide-ai-appwrite-cli.md).
+
 ## Part 2: Environment Setup (30 min)
 
-### Step 1: Create Appwrite Cloud Account
+### Step 1: Choose Your Appwrite Setup
 
-1. Go to [cloud.appwrite.io](https://cloud.appwrite.io)
-2. Sign up with Google or email
-3. Create a new project
+Pick one:
+
+1. **Appwrite Cloud**
+   - Go to [cloud.appwrite.io](https://cloud.appwrite.io)
+   - Sign up with Google or email
+   - Create a new project
    - Name: `ai-engineer-course`
-   - Region: Choose closest to you
+2. **Self-hosted Appwrite**
+   - Use the included Docker setup in `appwrite/`
+   - Follow [Guide: Self-Hosting Appwrite](guide-self-hosting-appwrite.md)
+   - Use `http://localhost:8080/v1` as your endpoint
+   - If you want the official installer flow first, use the Docker installer command from the self-hosting guide
 
 ### Step 2: Install Node.js
 
@@ -75,12 +96,15 @@ When prompted, select:
 - ✓ App Router
 - ✓ Import alias `@/*`
 
-### Step 4: Install Appwrite SDK
+### Step 4: Install Appwrite SDK and CLI
 
 ```bash
 cd guestbook
 npm install appwrite
+npm install -g appwrite-cli
 ```
+
+The CLI is optional for the first app, but required later when we move from manual console setup to faster, repeatable AI-assisted workflows.
 
 ## Part 3: First Database Collection (30 min)
 
@@ -121,7 +145,7 @@ Create `src/lib/appwrite.ts`:
 import { Client, Databases } from 'appwrite';
 
 const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1')
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
   .setProject('YOUR_PROJECT_ID');
 
 export const databases = new Databases(client);
@@ -186,6 +210,7 @@ Visit `http://localhost:3000` and see your first message!
 2. Set up the development environment
 3. Add 3 different messages to your guestbook
 4. Take a screenshot of your working app
+5. Decide whether you will stay on Appwrite Cloud or move to the self-hosted setup before Session 4
 
 ## Common Issues
 

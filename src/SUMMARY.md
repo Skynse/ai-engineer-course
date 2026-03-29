@@ -5,6 +5,8 @@
 # Course Sessions
 
 - [Session 1: Introduction & Setup](session-01.md)
+- [Guide: Self-Hosting Appwrite](guide-self-hosting-appwrite.md)
+- [Guide: AI + Appwrite CLI Workflow](guide-ai-appwrite-cli.md)
 - [Session 2: Basic CRUD Operations](session-02.md)
 - [Session 3: Next.js Integration & API Routes](session-03.md)
 - [Session 4: Simple Authentication](session-04.md)

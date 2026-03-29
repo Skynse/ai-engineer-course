@@ -1,414 +1,146 @@
-# Session 13: Demo App 3 - Social Feed
+# Session 13: Social Feed Demo
 
 **Duration**: 1.5 hours  
-**Goal**: Build a social media-style feed with likes and follows
+**Goal**: Build a social feed with images, likes, comments, and ownership-based deletes
 
 ## What We're Building
 
-A **Social Feed** app where users can:
-- Create text/image posts
-- Like posts (simple counter)
-- View user profiles with their posts
-- Follow/unfollow users (optional advanced)
+A social feed with:
 
-## Learning Objectives
+- text posts
+- optional image uploads
+- like and unlike
+- post detail view
+- comments on posts
+- delete actions for your own posts and comments
 
-By the end of this session, students will:
-- Build a Twitter-like interface
-- Implement like functionality
-- Create user timelines
-- Handle real-time updates (polling)
+The current demo is closer to a real content product with feed, composer, detail view, and discussion.
 
-## Part 1: Setup (10 min)
-
-### Collections
+## Database Schema
 
 **posts collection:**
+
 - `content` (string, required)
-- `imageUrl` (string, optional)
-- `authorId` (string, required)
-- `authorName` (string, required)
-- `authorAvatar` (string, optional)
-- `likes` (integer, default: 0)
-- `likedBy` (string array - user IDs)
-- `createdAt` (datetime)
+- `imageId` (string, optional)
+- `userId` (string, required)
+- `userName` (string, required)
+- `likes` (string array)
 
-## Part 2: Components (50 min)
+**comments collection:**
 
-### Post Card Component
+- `postId` (string, required)
+- `content` (string, required)
+- `userId` (string, required)
+- `userName` (string, required)
 
-Create `src/app/components/PostCard.tsx`:
+**storage bucket:**
 
-```typescript
-'use client';
+- `post-images`
 
-import { useState } from 'react';
-import Link from 'next/link';
+## Key Concepts
 
-interface Post {
-  $id: string;
-  content: string;
-  imageUrl?: string;
-  authorId: string;
-  authorName: string;
-  authorAvatar?: string;
-  likes: number;
-  likedBy: string[];
-  createdAt: string;
-}
+### 1. One-to-Many Relationships
 
-interface PostCardProps {
-  post: Post;
-  currentUserId?: string;
-  onLike: (postId: string) => void;
-}
+This is the clearest relationship example in the course:
 
-export default function PostCard({ post, currentUserId, onLike }: PostCardProps) {
-  const isLiked = currentUserId ? post.likedBy.includes(currentUserId) : false;
-  const [optimisticLiked, setOptimisticLiked] = useState(isLiked);
-  const [optimisticLikes, setOptimisticLikes] = useState(post.likes);
+- one post
+- many comments
 
-  function handleLike() {
-    if (!currentUserId) return;
+That means comments belong in their own collection, linked by `postId`.
 
-    // Optimistic update
-    if (optimisticLiked) {
-      setOptimisticLiked(false);
-      setOptimisticLikes(prev => prev - 1);
-    } else {
-      setOptimisticLiked(true);
-      setOptimisticLikes(prev => prev + 1);
-    }
+### 2. Likes As A User ID Array
 
-    onLike(post.$id);
-  }
-
-  const timeAgo = getTimeAgo(post.createdAt);
-
-  return (
-    <article className="bg-white p-4 border-b hover:bg-gray-50">
-      <div className="flex gap-3">
-        <Link href={`/user/${post.authorId}`}>
-          <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-            {post.authorAvatar ? (
-              <img src={post.authorAvatar} alt="" className="w-full h-full rounded-full object-cover" />
-            ) : (
-              post.authorName.charAt(0).toUpperCase()
-            )}
-          </div>
-        </Link>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <Link href={`/user/${post.authorId}`} className="font-bold hover:underline">
-              {post.authorName}
-            </Link>
-            <span className="text-gray-500">•</span>
-            <span className="text-gray-500 text-sm">{timeAgo}</span>
-          </div>
-
-          <p className="mb-3 whitespace-pre-wrap">{post.content}</p>
-
-          {post.imageUrl && (
-            <img
-              src={post.imageUrl}
-              alt="Post image"
-              className="rounded-lg max-h-96 object-cover mb-3"
-            />
-          )}
-
-          <div className="flex items-center gap-6 text-gray-500">
-            <button
-              onClick={handleLike}
-              disabled={!currentUserId}
-              className={`flex items-center gap-2 hover:text-red-500 transition-colors ${
-                optimisticLiked ? 'text-red-500' : ''
-              }`}
-            >
-              <span>{optimisticLiked ? '❤️' : '🤍'}</span>
-              <span>{optimisticLikes}</span>
-            </button>
-
-            <button className="flex items-center gap-2 hover:text-blue-500">
-              <span>💬</span>
-              <span>Comment</span>
-            </button>
-
-            <button className="flex items-center gap-2 hover:text-green-500">
-              <span>🔄</span>
-              <span>Share</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function getTimeAgo(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (seconds < 60) return 'just now';
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d`;
-  return date.toLocaleDateString();
-}
-```
-
-### Create Post Component
-
-Create `src/app/components/CreatePost.tsx`:
+The current demo stores likes directly on the post:
 
 ```typescript
-'use client';
-
-import { useState } from 'react';
-import ImageUpload from './ImageUpload';
-
-interface CreatePostProps {
-  userName: string;
-  userAvatar?: string;
-  onSubmit: (content: string, imageUrl: string) => void;
-}
-
-export default function CreatePost({ userName, userAvatar, onSubmit }: CreatePostProps) {
-  const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [showImageUpload, setShowImageUpload] = useState(false);
-
-  function handleSubmit() {
-    if (!content.trim()) return;
-    onSubmit(content, imageUrl);
-    setContent('');
-    setImageUrl('');
-    setShowImageUpload(false);
-  }
-
-  return (
-    <div className="bg-white p-4 border-b">
-      <div className="flex gap-3">
-        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-          {userAvatar ? (
-            <img src={userAvatar} alt="" className="w-full h-full rounded-full object-cover" />
-          ) : (
-            userName.charAt(0).toUpperCase()
-          )}
-        </div>
-
-        <div className="flex-1">
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="What's happening?"
-            className="w-full p-2 text-lg resize-none border-none focus:outline-none"
-            rows={3}
-          />
-
-          {showImageUpload && (
-            <div className="mb-3">
-              <ImageUpload onUpload={setImageUrl} currentImage={imageUrl} />
-            </div>
-          )}
-
-          <div className="flex justify-between items-center border-t pt-3">
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowImageUpload(!showImageUpload)}
-                className="text-blue-500 hover:bg-blue-50 p-2 rounded-full"
-                title="Add image"
-              >
-                📷
-              </button>
-              <button className="text-blue-500 hover:bg-blue-50 p-2 rounded-full" title="Add emoji">
-                😊
-              </button>
-            </div>
-
-            <button
-              onClick={handleSubmit}
-              disabled={!content.trim()}
-              className="bg-blue-500 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Post
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+likes: string[]
 ```
 
-### Feed Component
+That is simple and beginner-friendly. It makes toggling straightforward:
 
-Create `src/app/components/Feed.tsx`:
+- if the current user id exists, remove it
+- if it does not exist, add it
 
-```typescript
-'use client';
+This is not the only valid design, but it is a reasonable teaching tradeoff.
 
-import { useEffect, useState } from 'react';
-import PostCard from './PostCard';
-import CreatePost from './CreatePost';
+### 3. Image Uploads Reuse The Storage Pattern
 
-interface Post {
-  $id: string;
-  content: string;
-  imageUrl?: string;
-  authorId: string;
-  authorName: string;
-  authorAvatar?: string;
-  likes: number;
-  likedBy: string[];
-  createdAt: string;
-}
+Students should recognize the same pattern from the recipe app:
 
-interface FeedProps {
-  currentUser?: {
-    $id: string;
-    name: string;
-    avatar?: string;
-  };
-}
+1. upload image to Storage
+2. store `imageId` on the post document
+3. render the image later from the stored file id
 
-export default function Feed({ currentUser }: FeedProps) {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+The important lesson is that Storage integration is a reusable pattern across product types.
 
-  useEffect(() => {
-    loadPosts();
-    // Poll for new posts every 30 seconds
-    const interval = setInterval(loadPosts, 30000);
-    return () => clearInterval(interval);
-  }, []);
+### 4. Detail View Loads Related Data
 
-  async function loadPosts() {
-    try {
-      const response = await fetch('/api/posts');
-      const data = await response.json();
-      setPosts(data.posts);
-    } catch (error) {
-      console.error('Error loading posts:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
+The current social demo loads comments when a post is opened.
 
-  async function handleCreatePost(content: string, imageUrl: string) {
-    if (!currentUser) return;
+That teaches students:
 
-    try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content,
-          imageUrl,
-          authorId: currentUser.$id,
-          authorName: currentUser.name,
-          authorAvatar: currentUser.avatar
-        })
-      });
+- not every related dataset should be loaded up front
+- open the detail view first
+- then fetch the comments for that specific post
 
-      if (response.ok) {
-        loadPosts(); // Refresh feed
-      }
-    } catch (error) {
-      console.error('Error creating post:', error);
-    }
-  }
+### 5. Ownership Matters
 
-  async function handleLike(postId: string) {
-    if (!currentUser) return;
+The current app now supports deleting:
 
-    try {
-      await fetch(`/api/posts/${postId}/like`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.$id })
-      });
-    } catch (error) {
-      console.error('Error liking post:', error);
-    }
-  }
+- your own posts
+- your own comments
 
-  return (
-    <div className="max-w-2xl mx-auto">
-      {currentUser && (
-        <CreatePost
-          userName={currentUser.name}
-          userAvatar={currentUser.avatar}
-          onSubmit={handleCreatePost}
-        />
-      )}
+This is a good place to teach that ownership is not just a UI concern. It affects:
 
-      {loading ? (
-        <div className="text-center py-8">Loading posts...</div>
-      ) : posts.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No posts yet. Be the first to share something!
-        </div>
-      ) : (
-        <div>
-          {posts.map((post) => (
-            <PostCard
-              key={post.$id}
-              post={post}
-              currentUserId={currentUser?.$id}
-              onLike={handleLike}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-```
+- permissions
+- delete rules
+- image cleanup
+- related record cleanup
 
-## Part 3: Main Page (10 min)
+When a post is deleted, the app also deletes:
 
-Create `src/app/page.tsx`:
+- its comments
+- its uploaded image file if one exists
 
-```typescript
-import Feed from './components/Feed';
-import Navbar from './components/Navbar';
+That is a full-stack workflow, not just a button.
 
-// Mock current user
-const currentUser = {
-  $id: 'user1',
-  name: 'Demo User',
-  avatar: undefined
-};
+## What The Current Demo Actually Does
 
-export default function Home() {
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <Navbar />
-      <main className="py-4">
-        <Feed currentUser={currentUser} />
-      </main>
-    </div>
-  );
-}
-```
+The current `social-feed` demo supports:
 
-## Key Features
+- create post
+- upload post image
+- list feed items
+- open post detail
+- like and unlike
+- create comment
+- delete your own comment
+- delete your own post
 
-1. **Optimistic Updates**: Like button updates immediately
-2. **Polling**: Check for new posts every 30 seconds
-3. **Time Ago**: Smart timestamps ("2m", "1h", "2d")
-4. **Responsive**: Works on mobile and desktop
+That means the lesson should not tell students that comments are "optional" or "future work." They are part of the shipped demo now.
+
+## Component And File Reference
+
+The main implementation currently centers on:
+
+- `demo-projects/social-feed/src/app/page.tsx`
+- `demo-projects/social-feed/src/app/components/Navbar.tsx`
+- `demo-projects/social-feed/src/lib/appwrite.ts`
+
+## Implementation Notes
+
+1. Use a separate comments query filtered by `postId`.
+2. Keep post creation and comment creation as separate mutation flows.
+3. Only show delete actions to the owner of the resource.
+4. If you delete a post that has an uploaded image, delete the Storage file too.
+5. After destructive actions, refresh the relevant dataset immediately.
 
 ## Homework
 
-1. Connect to real Appwrite backend
-2. Add comments to posts
-3. Implement user following
-4. Add "Load More" pagination
-5. Add real-time updates with Appwrite Realtime
+1. Add pagination or "load more" instead of rendering every post at once.
+2. Replace image `img` tags with `next/image` and explain the tradeoffs.
+3. Ask AI to propose a follow system, then explain whether that should be a new collection or a field on the user document.
 
 ---
 
-**Next Session**: Styling and polish!
+**Next**: Final polish, consistency, and deployment thinking

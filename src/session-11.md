@@ -1,484 +1,135 @@
-# Session 11: Demo App 1 - Task Manager
+# Session 11: Task Manager Demo
 
 **Duration**: 1.5 hours  
-**Goal**: Build a complete task management application
+**Goal**: Build a kanban-style task manager with stable ordering and drag-and-drop
 
 ## What We're Building
 
-A **Task Manager** where users can:
-- Create tasks with priorities (Low, Medium, High)
-- Mark tasks as complete/incomplete
-- Filter by status (All, Active, Completed)
-- Sort by priority or date
-- Edit and delete tasks
+A task manager with:
 
-## Learning Objectives
+- Appwrite auth
+- three board columns: `backlog`, `in-progress`, `done`
+- create, edit, move, and delete task flows
+- drag-and-drop reordering
+- stable card ordering with a LexoRank-style `order` field
+- priority filtering without changing the underlying order
 
-By the end of this session, students will:
-- Build a complete CRUD application from scratch
-- Implement filtering and sorting
-- Use enums for fixed values (priority)
-- Practice everything learned so far
+## What Changed From The Earlier CRUD Example
 
-## Part 1: Setup (15 min)
+The current demo project is a board-first app. It now models:
 
-### Create New Project
+- **status** as the column a card belongs to
+- **order** as the sorting key inside a column
+- **completed** as a derived concept from moving a card into `done`
 
-```bash
-cd ~/projects
-npx create-next-app@latest task-manager --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
-cd task-manager
-npm install appwrite
-```
+That is closer to how real product teams structure work apps.
 
-### Create Collections
+## Database Schema
 
 **tasks collection:**
+
 - `title` (string, required)
 - `description` (string, optional)
-- `priority` (enum: low, medium, high, default: medium)
-- `completed` (boolean, default: false)
+- `priority` (string/enum: `low`, `medium`, `high`)
+- `status` (enum: `backlog`, `in-progress`, `done`)
+- `order` (string, optional but required in practice)
+- `completed` (boolean)
 - `userId` (string, required)
 - `userName` (string, required)
-- `createdAt` (datetime, required)
-- `completedAt` (datetime, optional)
+- `completedAt` (string or datetime, optional)
 
-Permissions:
-- Create: users
-- Read: user:[ID] (only own tasks)
-- Update: user:[ID]
-- Delete: user:[ID]
+## Key Concepts
 
-## Part 2: Core Components (45 min)
+### 1. Board State Is Better Than A Checkbox
 
-### Task Type Definition
+Earlier in the course, `completed: boolean` was enough.
 
-Create `src/types/task.ts`:
+For a board app, we need stronger state:
 
-```typescript
-export interface Task {
-  $id: string;
-  title: string;
-  description: string;
-  priority: 'low' | 'medium' | 'high';
-  completed: boolean;
-  userId: string;
-  userName: string;
-  createdAt: string;
-  completedAt?: string;
-}
+- `backlog`
+- `in-progress`
+- `done`
 
-export type Priority = 'low' | 'medium' | 'high';
-export type FilterStatus = 'all' | 'active' | 'completed';
-export type SortBy = 'date' | 'priority';
-```
+This gives us column-based UI, better reporting, and cleaner movement logic.
 
-### Task List Component
+### 2. LexoRank-Style Ordering
 
-Create `src/app/components/TaskList.tsx`:
+Instead of storing `1, 2, 3, 4`, the board stores an ordering string.
+
+Why:
+
+- moving one card should not force every card below it to be renumbered
+- drag-and-drop should generate a new key between two neighboring cards
+- the app can keep stable order even after many moves
+
+Conceptually:
 
 ```typescript
-'use client';
-
-import { Task } from '@/types/task';
-import TaskItem from './TaskItem';
-
-interface TaskListProps {
-  tasks: Task[];
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
-  onEdit: (task: Task) => void;
-}
-
-export default function TaskList({ tasks, onToggle, onDelete, onEdit }: TaskListProps) {
-  if (tasks.length === 0) {
-    return (
-      <div className="text-center py-12 text-gray-500">
-        No tasks found. Create your first task!
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {tasks.map((task) => (
-        <TaskItem
-          key={task.$id}
-          task={task}
-          onToggle={() => onToggle(task.$id)}
-          onDelete={() => onDelete(task.$id)}
-          onEdit={() => onEdit(task)}
-        />
-      ))}
-    </div>
-  );
-}
+const newOrder = generateLexoRankBetween(previousTask?.order, nextTask?.order);
 ```
 
-### Task Item Component
+### 3. Drag-And-Drop Is A Data Problem, Not Just A UI Problem
 
-Create `src/app/components/TaskItem.tsx`:
+When a user drops a card:
 
-```typescript
-'use client';
+1. determine the target column
+2. determine the target position inside that column
+3. calculate a new `order`
+4. persist `status`, `order`, and completion metadata
 
-import { Task } from '@/types/task';
+That is why schema design matters before styling.
 
-interface TaskItemProps {
-  task: Task;
-  onToggle: () => void;
-  onDelete: () => void;
-  onEdit: () => void;
-}
+### 4. Repairing Old Data
 
-const priorityColors = {
-  low: 'bg-green-100 text-green-800',
-  medium: 'bg-yellow-100 text-yellow-800',
-  high: 'bg-red-100 text-red-800'
-};
+If older tasks are missing `status` or `order`, the current app repairs them on load. This is a useful beginner lesson:
 
-export default function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
-  return (
-    <div className={`p-4 bg-white rounded-lg shadow flex items-center gap-4 ${task.completed ? 'opacity-60' : ''}`}>
-      <input
-        type="checkbox"
-        checked={task.completed}
-        onChange={onToggle}
-        className="w-5 h-5"
-      />
+- demos evolve
+- schemas evolve
+- you still need a migration or repair strategy
 
-      <div className="flex-1">
-        <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : ''}`}>
-          {task.title}
-        </h3>
-        
-        {task.description && (
-          <p className="text-sm text-gray-600 mt-1">{task.description}</p>
-        )}
+## Component Structure
 
-        <div className="flex items-center gap-2 mt-2">
-          <span className={`text-xs px-2 py-1 rounded ${priorityColors[task.priority]}`}>
-            {task.priority}
-          </span>
-          
-          <span className="text-xs text-gray-500">
-            Created: {new Date(task.createdAt).toLocaleDateString()}
-          </span>
-          
-          {task.completedAt && (
-            <span className="text-xs text-gray-500">
-              Completed: {new Date(task.completedAt).toLocaleDateString()}
-            </span>
-          )}
-        </div>
-      </div>
+The current demo is organized around the board:
 
-      <div className="flex gap-2">
-        <button
-          onClick={onEdit}
-          className="text-blue-500 hover:text-blue-700 text-sm"
-        >
-          Edit
-        </button>
-        <button
-          onClick={onDelete}
-          className="text-red-500 hover:text-red-700 text-sm"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  );
-}
+```text
+components/
+├── TaskForm.tsx
+├── TaskFilters.tsx
+├── TaskItem.tsx
+└── TaskList.tsx
 ```
 
-### Task Form Component
+Responsibilities:
 
-Create `src/app/components/TaskForm.tsx`:
+- `TaskForm.tsx`: create and edit tasks, including `status`
+- `TaskFilters.tsx`: priority filtering and drag-state messaging
+- `TaskList.tsx`: render columns and drop zones
+- `TaskItem.tsx`: render cards, actions, and drag handles
 
-```typescript
-'use client';
+## Implementation Notes
 
-import { useState } from 'react';
-import { Task, Priority } from '@/types/task';
+1. Sort cards by `order` first, then fall back safely if older records are missing it.
+2. Disable drag-and-drop when priority filters are active so students do not reorder a partial view by mistake.
+3. Treat moving into `done` as the moment to sync `completed` and `completedAt`.
+4. Keep ownership in the schema with `userId` and `userName`.
 
-interface TaskFormProps {
-  task?: Task;
-  onSubmit: (data: { title: string; description: string; priority: Priority }) => void;
-  onCancel: () => void;
-}
+## Demo Project Reference
 
-export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
-  const [title, setTitle] = useState(task?.title || '');
-  const [description, setDescription] = useState(task?.description || '');
-  const [priority, setPriority] = useState<Priority>(task?.priority || 'medium');
+The current implementation lives in `demo-projects/task-manager/`.
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    onSubmit({ title, description, priority });
-  }
+Students should inspect:
 
-  return (
-    <form onSubmit={handleSubmit} className="bg-gray-50 p-6 rounded-lg mb-6">
-      <h3 className="text-lg font-semibold mb-4">
-        {task ? 'Edit Task' : 'New Task'}
-      </h3>
-
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Title *</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="What needs to be done?"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border rounded h-20"
-            placeholder="Add details..."
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Priority</label>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as Priority)}
-            className="w-full p-2 border rounded"
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            {task ? 'Update Task' : 'Add Task'}
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </form>
-  );
-}
-```
-
-## Part 3: Filters Component (20 min)
-
-Create `src/app/components/TaskFilters.tsx`:
-
-```typescript
-'use client';
-
-import { FilterStatus, SortBy } from '@/types/task';
-
-interface TaskFiltersProps {
-  filter: FilterStatus;
-  sortBy: SortBy;
-  onFilterChange: (filter: FilterStatus) => void;
-  onSortChange: (sort: SortBy) => void;
-  taskCount: { all: number; active: number; completed: number };
-}
-
-export default function TaskFilters({
-  filter,
-  sortBy,
-  onFilterChange,
-  onSortChange,
-  taskCount
-}: TaskFiltersProps) {
-  return (
-    <div className="bg-white p-4 rounded-lg shadow mb-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        {/* Filter Buttons */}
-        <div className="flex gap-2">
-          {(['all', 'active', 'completed'] as FilterStatus[]).map((f) => (
-            <button
-              key={f}
-              onClick={() => onFilterChange(f)}
-              className={`px-4 py-2 rounded capitalize ${
-                filter === f
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {f}
-              <span className="ml-2 text-sm opacity-75">
-                ({f === 'all' ? taskCount.all : f === 'active' ? taskCount.active : taskCount.completed})
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Sort Dropdown */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600">Sort by:</label>
-          <select
-            value={sortBy}
-            onChange={(e) => onSortChange(e.target.value as SortBy)}
-            className="p-2 border rounded"
-          >
-            <option value="date">Date Created</option>
-            <option value="priority">Priority</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  );
-}
-```
-
-## Part 4: Main Page (10 min)
-
-Create `src/app/page.tsx`:
-
-```typescript
-'use client';
-
-import { useState } from 'react';
-import { Task, FilterStatus, SortBy } from '@/types/task';
-import TaskList from './components/TaskList';
-import TaskForm from './components/TaskForm';
-import TaskFilters from './components/TaskFilters';
-
-export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [filter, setFilter] = useState<FilterStatus>('all');
-  const [sortBy, setSortBy] = useState<SortBy>('date');
-
-  // Filter and sort tasks
-  const filteredTasks = tasks.filter((task) => {
-    if (filter === 'active') return !task.completed;
-    if (filter === 'completed') return task.completed;
-    return true;
-  }).sort((a, b) => {
-    if (sortBy === 'date') {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-    // Priority sort: high > medium > low
-    const priorityOrder = { high: 3, medium: 2, low: 1 };
-    return priorityOrder[b.priority] - priorityOrder[a.priority];
-  });
-
-  const taskCount = {
-    all: tasks.length,
-    active: tasks.filter((t) => !t.completed).length,
-    completed: tasks.filter((t) => t.completed).length
-  };
-
-  // Handlers (would connect to API in real app)
-  const handleAddTask = (data: { title: string; description: string; priority: SortBy }) => {
-    // API call would go here
-    console.log('Adding task:', data);
-    setShowForm(false);
-  };
-
-  const handleEditTask = (data: { title: string; description: string; priority: SortBy }) => {
-    // API call would go here
-    console.log('Editing task:', data);
-    setEditingTask(null);
-    setShowForm(false);
-  };
-
-  const handleToggleTask = (id: string) => {
-    // API call would go here
-    console.log('Toggling task:', id);
-  };
-
-  const handleDeleteTask = (id: string) => {
-    // API call would go here
-    console.log('Deleting task:', id);
-  };
-
-  return (
-    <main className="max-w-3xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Task Manager</h1>
-
-      <button
-        onClick={() => {
-          setEditingTask(null);
-          setShowForm(!showForm);
-        }}
-        className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 mb-6"
-      >
-        {showForm ? 'Cancel' : '+ Add New Task'}
-      </button>
-
-      {showForm && (
-        <TaskForm
-          task={editingTask || undefined}
-          onSubmit={editingTask ? handleEditTask : handleAddTask}
-          onCancel={() => {
-            setShowForm(false);
-            setEditingTask(null);
-          }}
-        />
-      )}
-
-      <TaskFilters
-        filter={filter}
-        sortBy={sortBy}
-        onFilterChange={setFilter}
-        onSortChange={setSortBy}
-        taskCount={taskCount}
-      />
-
-      <TaskList
-        tasks={filteredTasks}
-        onToggle={handleToggleTask}
-        onDelete={handleDeleteTask}
-        onEdit={(task) => {
-          setEditingTask(task);
-          setShowForm(true);
-        }}
-      />
-    </main>
-  );
-}
-```
-
-## What to Complete
-
-Students should:
-1. Connect all handlers to real API calls
-2. Add authentication
-3. Deploy the app
-4. Test all features
-
-## Key Takeaways
-
-1. **Enums**: Use for fixed values like priority levels
-2. **Filtering**: Client-side for small data, server-side for large
-3. **State Management**: Lift state up to parent component
-4. **Reusable Components**: Break UI into small, focused pieces
+- `src/app/page.tsx`
+- `src/lib/lexorank.ts`
+- `src/app/components/TaskList.tsx`
+- `src/app/components/TaskItem.tsx`
 
 ## Homework
 
-1. Connect to real Appwrite backend
-2. Add due dates to tasks
-3. Add categories/tags
-4. Add task statistics dashboard
+1. Add a due date field and show overdue cards visually.
+2. Add a fourth lane such as `blocked` or `review`.
+3. Ask AI to propose a board schema, then compare it to the shipped schema and explain the differences.
 
 ---
 
-**Next Session**: Demo App 2 - Recipe Collection!
+**Next**: Recipe Collection (arrays, uploads, and richer document shapes)
