@@ -3,6 +3,8 @@ node_modules/
 
 # Build output
 book/
+course-site/dist/
+course-site/.astro/
 
 # Next.js
 .next/

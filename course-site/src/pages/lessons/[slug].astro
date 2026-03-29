@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { course, getAdjacentLessons, getLesson } from '../../lib/course';
+
+export function getStaticPaths() {
+  return course.lessons.map((lesson) => ({
+    params: { slug: lesson.slug },
+  }));
+}
+
+const slug = Astro.params.slug ?? '';
+const lesson = getLesson(slug);
+
+if (!lesson) {
+  throw new Error(`Unknown lesson: ${slug}`);
+}
+
+const { previous, next } = getAdjacentLessons(slug);
+---
+
+<BaseLayout title={`${lesson.title} | ${course.title}`}>
+  <main class="page lesson-shell">
+    <aside class="panel sidebar">
+      <div class="sidebar-course">
+        <div class="eyebrow">Course</div>
+        <div style="margin-top:8px;font-size:1.1rem;font-weight:700;line-height:1.4;">{course.title}</div>
+        <div class="sidebar-progress"><span /></div>
+      </div>
+
+      {course.modules.map((module) => (
+        <section class="sidebar-module">
+          <div class="sidebar-module-title">
+            <span class="module-code">{module.code}</span>
+            <span>{module.title}</span>
+          </div>
+          <div class="sidebar-lessons">
+            {module.lessons.map((entry) => (
+              <a
+                href={`/lessons/${entry.slug}/`}
+                class:list={['sidebar-link', { active: entry.slug === lesson.slug }]}
+              >
+                <span class="sidebar-link-num">{entry.number}</span>
+                <span class="sidebar-link-title">{entry.title}</span>
+                <span class="sidebar-link-state">{entry.slug === lesson.slug ? 'Open' : 'Ready'}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </aside>
+
+    <article class="panel lesson-content">
+      <div class="lesson-head">
+        <div>
+          <div class="lesson-chip">{lesson.moduleCode} • {lesson.number}</div>
+          <h1>{lesson.title}</h1>
+        </div>
+      </div>
+
+      {lesson.image && (
+        <div class="lesson-hero">
+          <img src={lesson.image} alt={lesson.title} />
+        </div>
+      )}
+
+      <div set:html={lesson.html} />
+
+      <nav class="lesson-nav">
+        {previous ? (
+          <a href={`/lessons/${previous.slug}/`}>
+            <span class="lesson-nav-eyebrow">Previous</span>
+            <span class="lesson-nav-title">{previous.title}</span>
+          </a>
+        ) : <div />}
+
+        {next ? (
+          <a href={`/lessons/${next.slug}/`} style="text-align:right;">
+            <span class="lesson-nav-eyebrow">Next</span>
+            <span class="lesson-nav-title">{next.title}</span>
+          </a>
+        ) : <div />}
+      </nav>
+    </article>
+  </main>
+</BaseLayout>

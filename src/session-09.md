@@ -67,64 +67,41 @@ Let's implement a "private post" feature:
 
 Add `isPrivate` boolean field to `posts` collection.
 
-#### Update Get Posts API
+#### Load Posts Through Appwrite Permissions
 
-Update `src/app/api/posts/route.ts`:
+For this beginner version, do not trust a query parameter like `?userId=...` and do not manually filter privacy in an API route.
+
+Instead:
+
+1. put the privacy rules into Appwrite document permissions
+2. fetch posts from the authenticated client session
+3. let Appwrite decide which posts are readable
+
+Example:
 
 ```typescript
-import { NextResponse } from 'next/server';
-import { databases, DATABASE_ID } from '@/lib/appwrite';
+import { databases, DATABASE_ID, POSTS_COLLECTION } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 
-const POSTS_COLLECTION = 'posts';
-
-export async function GET(request: Request) {
-  try {
-    // Get current user (if logged in)
-    const cookies = request.headers.get('cookie');
-    let currentUserId = null;
-    
-    // Try to get user from session (simplified - in real app use proper auth)
-    // For now, we'll pass userId as query param for demo
-    const { searchParams } = new URL(request.url);
-    currentUserId = searchParams.get('userId');
-
-    // Build query: published posts OR user's own posts
-    const queries = [
-      Query.equal('published', true),
-      Query.orderDesc('$createdAt')
-    ];
-
-    // If user is logged in, also get their private posts
-    // This is simplified - in production use proper server-side auth
-    
-    const posts = await databases.listDocuments(
-      DATABASE_ID,
-      POSTS_COLLECTION,
-      queries
-    );
-    
-    // Filter private posts on server
-    const visiblePosts = posts.documents.filter((post: any) => {
-      if (!post.isPrivate) return true;
-      if (currentUserId && post.authorId === currentUserId) return true;
-      return false;
-    });
-
-    return NextResponse.json({ posts: visiblePosts });
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch posts' },
-      { status: 500 }
-    );
-  }
-}
+const posts = await databases.listDocuments(
+  DATABASE_ID,
+  POSTS_COLLECTION,
+  [Query.orderDesc('$createdAt')]
+);
 ```
+
+With the correct permissions:
+
+- guests see only public posts
+- signed-in users see public posts and any private posts they own
+
+That is much safer than trying to prove identity with request query params.
 
 #### Update Create Post to Support Privacy
 
 ```typescript
+import { ID, Permission, Role } from 'appwrite';
+
 // In POST handler
 const { title, content, authorId, authorName, featuredImage, isPrivate } = body;
 
@@ -142,9 +119,18 @@ const post = await databases.createDocument(
     published: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
-  }
+  },
+  [
+    isPrivate
+      ? Permission.read(Role.user(authorId))
+      : Permission.read(Role.any()),
+    Permission.update(Role.user(authorId)),
+    Permission.delete(Role.user(authorId))
+  ]
 );
 ```
+
+For private posts, the author is the only reader. For public posts, everyone can read but only the author can update or delete.
 
 #### Add Privacy Toggle to Form
 
@@ -221,11 +207,14 @@ if (!title || typeof title !== 'string' || title.length > 200) {
   return NextResponse.json({ error: 'Invalid title' }, { status: 400 });
 }
 
-// Sanitize content (basic example)
-const sanitizedContent = content
-  .replace(/<script[^<]*(?:(?!</script>)<[^<]*)*<\/script>/gi, '')
-  .trim();
+if (!content || typeof content !== 'string') {
+  return NextResponse.json({ error: 'Invalid content' }, { status: 400 });
+}
+
+const sanitizedContent = content.trim();
 ```
+
+For beginner projects, keep validation simple and explicit. If you need real HTML sanitization later, use a dedicated sanitization library instead of inventing a complex regex.
 
 ### 3. Use Principle of Least Privilege
 

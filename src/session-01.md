@@ -71,6 +71,16 @@ Pick one:
    - Use `http://localhost:8080/v1` as your endpoint
    - If you want the official installer flow first, use the Docker installer command from the self-hosting guide
 
+![Appwrite create project screen](/assets/docs/appwrite/create-project.png)
+
+After the project exists, Appwrite will ask you to connect a platform. For browser apps in this course, add a Web platform and use `localhost` while developing locally.
+
+![Appwrite add platform screen](/assets/docs/appwrite/add-platform.png)
+
+If you plan to use the CLI or server-side Appwrite SDKs later in the course, the next area to pay attention to is the server integration section inside the project setup flow.
+
+![Appwrite server integration screen](/assets/docs/appwrite/integrate-server.png)
+
 ### Step 2: Install Node.js
 
 Check if Node.js is installed:
@@ -116,6 +126,10 @@ The CLI is optional for the first app, but required later when we move from manu
 4. Click **Create Collection**
 5. Name: `messages`
 
+To wire your app to Appwrite, you will need the Project ID from your project settings.
+
+![Appwrite project settings showing the Project ID](/assets/docs/appwrite/project-settings-project-id.png)
+
 ### Adding Attributes
 
 Add these fields to your `messages` collection:
@@ -153,27 +167,14 @@ export const DATABASE_ID = 'main';
 export const MESSAGES_COLLECTION = 'messages';
 ```
 
-### Test with a Simple Page
+### Test with a Simple Read-Only Page
 
 Replace `src/app/page.tsx`:
 
 ```typescript
 import { databases, DATABASE_ID, MESSAGES_COLLECTION } from '@/lib/appwrite';
-import { ID } from 'appwrite';
 
 export default async function Home() {
-  // Add a test message
-  await databases.createDocument(
-    DATABASE_ID,
-    MESSAGES_COLLECTION,
-    ID.unique(),
-    {
-      content: 'Hello from my first app!',
-      author: 'Student',
-      createdAt: new Date().toISOString()
-    }
-  );
-
   // Fetch all messages
   const messages = await databases.listDocuments(
     DATABASE_ID,
@@ -195,6 +196,17 @@ export default async function Home() {
   );
 }
 ```
+
+Do not create a document directly inside the page render. If you write inside `Home()`, every refresh or re-render creates another record. We only want to verify that the app can read from Appwrite in Session 1.
+
+To create your first document, add it once in the Appwrite console:
+
+1. Open the `messages` collection
+2. Click **Create Document**
+3. Add:
+   - `content`: `Hello from my first app!`
+   - `author`: `Student`
+   - `createdAt`: current date/time
 
 ### Run the App
 
