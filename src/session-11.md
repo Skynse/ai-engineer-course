@@ -1,4 +1,4 @@
-# Session 11: Task Manager Demo
+# Lesson 11: Task Manager Demo
 
 **Duration**: 1.5 hours  
 **Goal**: Build a kanban-style task manager with stable ordering and drag-and-drop
@@ -109,7 +109,7 @@ Responsibilities:
 ## Implementation Notes
 
 1. Sort cards by `order` first, then fall back safely if older records are missing it.
-2. Disable drag-and-drop when priority filters are active so students do not reorder a partial view by mistake.
+2. Disable drag-and-drop when priority filters are active so you do not reorder a partial view by mistake.
 3. Treat moving into `done` as the moment to sync `completed` and `completedAt`.
 4. Keep ownership in the schema with `userId` and `userName`.
 
@@ -117,7 +117,7 @@ Responsibilities:
 
 The current implementation lives in `demo-projects/task-manager/`.
 
-Students should inspect:
+You should inspect:
 
 - `src/app/page.tsx`
 - `src/lib/lexorank.ts`

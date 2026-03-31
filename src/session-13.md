@@ -1,4 +1,4 @@
-# Session 13: Social Feed Demo
+# Lesson 13: Social Feed Demo
 
 **Duration**: 1.5 hours  
 **Goal**: Build a social feed with images, likes, comments, and ownership-based deletes
@@ -65,7 +65,7 @@ This is not the only valid design, but it is a reasonable teaching tradeoff.
 
 ### 3. Image Uploads Reuse The Storage Pattern
 
-Students should recognize the same pattern from the recipe app:
+Recognize the same pattern from the recipe app:
 
 1. upload image to Storage
 2. store `imageId` on the post document
@@ -77,7 +77,7 @@ The important lesson is that Storage integration is a reusable pattern across pr
 
 The current social demo loads comments when a post is opened.
 
-That teaches students:
+That teaches you:
 
 - not every related dataset should be loaded up front
 - open the detail view first
@@ -117,7 +117,7 @@ The current `social-feed` demo supports:
 - delete your own comment
 - delete your own post
 
-That means the lesson should not tell students that comments are "optional" or "future work." They are part of the shipped demo now.
+That means comments should not be treated as "optional" or "future work." They are part of the shipped demo now.
 
 ## Component And File Reference
 

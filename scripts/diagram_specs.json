@@ -1,0 +1,72 @@
+{
+  "diagrams": [
+    {
+      "slug": "lesson-01-full-stack-map",
+      "title": "Full-Stack Request Flow",
+      "subtitle": "How frontend, backend, and database work together",
+      "nodes": [
+        { "id": "user", "label": "User Action", "col": 0, "row": 0, "tone": "accent" },
+        { "id": "frontend", "label": "Frontend\nNext.js page", "col": 1, "row": 0 },
+        { "id": "backend", "label": "Backend\nAPI route or Appwrite", "col": 2, "row": 0 },
+        { "id": "database", "label": "Database\nStored app data", "col": 3, "row": 0 },
+        { "id": "response", "label": "UI updates\nwith the result", "col": 1, "row": 1, "tone": "accent" }
+      ],
+      "edges": [
+        { "from": "user", "to": "frontend", "label": "click / submit" },
+        { "from": "frontend", "to": "backend", "label": "request" },
+        { "from": "backend", "to": "database", "label": "read / write" },
+        { "from": "backend", "to": "response", "label": "result" }
+      ]
+    },
+    {
+      "slug": "lesson-02-local-todo-flow",
+      "title": "Local TODO App Flow",
+      "subtitle": "What happens before a backend is added",
+      "nodes": [
+        { "id": "input", "label": "You type a task", "col": 0, "row": 0, "tone": "accent" },
+        { "id": "state", "label": "React state\nupdates locally", "col": 1, "row": 0 },
+        { "id": "render", "label": "Page re-renders\nwith the new list", "col": 2, "row": 0 },
+        { "id": "refresh", "label": "Browser refresh\nresets the data", "col": 1, "row": 1, "tone": "accent" }
+      ],
+      "edges": [
+        { "from": "input", "to": "state", "label": "submit" },
+        { "from": "state", "to": "render", "label": "render" },
+        { "from": "render", "to": "refresh", "label": "reload" }
+      ]
+    },
+    {
+      "slug": "lesson-03-crud-api-flow",
+      "title": "CRUD Through An API Route",
+      "subtitle": "The beginner-friendly Appwrite-backed imageboard thread flow",
+      "nodes": [
+        { "id": "ui", "label": "UI\nform or list", "col": 0, "row": 0, "tone": "accent" },
+        { "id": "api", "label": "Next.js API route\nvalidate and shape data", "col": 1, "row": 0 },
+        { "id": "appwrite", "label": "Appwrite\nDatabases / Auth / Storage", "col": 2, "row": 0 },
+        { "id": "verify", "label": "Verify in browser\nand Appwrite", "col": 1, "row": 1, "tone": "accent" }
+      ],
+      "edges": [
+        { "from": "ui", "to": "api", "label": "GET / POST" },
+        { "from": "api", "to": "appwrite", "label": "CRUD" },
+        { "from": "appwrite", "to": "verify", "label": "data changed" }
+      ]
+    },
+    {
+      "slug": "codex-build-loop",
+      "title": "Prompt -> Build -> Verify Loop",
+      "subtitle": "The default implementation loop used across the lessons",
+      "nodes": [
+        { "id": "goal", "label": "Define the goal", "col": 0, "row": 0, "tone": "accent" },
+        { "id": "prompt", "label": "Prompt Codex\nwith one bounded step", "col": 1, "row": 0 },
+        { "id": "build", "label": "Review the generated\ncode or patch", "col": 2, "row": 0 },
+        { "id": "test", "label": "Run and test\nin the app", "col": 3, "row": 0 },
+        { "id": "iterate", "label": "Tighten the prompt\nor fix the mismatch", "col": 2, "row": 1, "tone": "accent" }
+      ],
+      "edges": [
+        { "from": "goal", "to": "prompt", "label": "describe" },
+        { "from": "prompt", "to": "build", "label": "generate" },
+        { "from": "build", "to": "test", "label": "run" },
+        { "from": "test", "to": "iterate", "label": "check" }
+      ]
+    }
+  ]
+}

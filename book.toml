@@ -1,7 +1,7 @@
 [book]
 title = "AI Engineer (Full Stack) Course"
 authors = ["Coding Minds"]
-description = "16-session course teaching full-stack development with Next.js and Appwrite"
+description = "16-session course teaching Codex-first full-stack development with Next.js and Appwrite"
 language = "en"
 src = "src"
 

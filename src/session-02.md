@@ -1,301 +1,230 @@
-# Session 2: Basic CRUD Operations
+# Lesson 2: Next.js Introduction & First TODO App
 
 **Duration**: 1.5 hours  
-**Goal**: Master Create, Read, Update, Delete operations
+**Goal**: Learn the shape of a Next.js app by building a small local TODO website without AI or Appwrite
 
 ## Learning Objectives
 
-By the end of this session, students will:
-- Understand CRUD operations
-- Create, read, update, and delete documents
-- Use Appwrite's ID generation
-- Handle dates and formatting
+By the end of this lesson, you will:
+- create a new Next.js project with Bun
+- understand the role of `app/`, pages, and components
+- build a small interactive TODO app with local React state
+- distinguish between a local-only app and a full-stack app
+- prepare for the Appwrite-backed lessons that begin after this
 
-## Part 1: CRUD Overview (15 min)
+## Part 1: Why Start With a Local App?
 
-### What is CRUD?
+Before you prompt Codex to build full-stack features, you need a clear mental model of what a Next.js app looks like when the moving parts are small.
 
-CRUD stands for the four basic operations:
+This lesson stays intentionally simple:
 
-| Operation | Appwrite Method | HTTP Method |
-|-----------|----------------|-------------|
-| **C**reate | `createDocument()` | POST |
-| **R**ead | `getDocument()` / `listDocuments()` | GET |
-| **U**pdate | `updateDocument()` | PATCH |
-| **D**elete | `deleteDocument()` | DELETE |
+- no AI
+- no Appwrite
+- no auth
+- no database
 
-### Understanding Document IDs
+That way you can focus on:
+- file structure
+- JSX
+- state
+- events
+- rendering a list
 
-Every document in Appwrite has a unique ID (`$id`). You can:
-- Let Appwrite generate one: `ID.unique()`
-- Specify your own: `'my-custom-id'`
+![Local TODO app flow](/assets/diagrams/lesson-02-local-todo-flow.png)
 
-## Part 2: Improving Our Guestbook (45 min)
+## Part 2: Create the App
 
-### Step 1: Separate Display from Creation
+### Scaffold the Project
 
-Create `src/app/components/MessageList.tsx`:
+Run:
 
-```typescript
-'use client';
-
-import { useEffect, useState } from 'react';
-import { databases, DATABASE_ID, MESSAGES_COLLECTION } from '@/lib/appwrite';
-
-interface Message {
-  $id: string;
-  content: string;
-  author: string;
-  createdAt: string;
-}
-
-export default function MessageList() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadMessages();
-  }, []);
-
-  async function loadMessages() {
-    try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        MESSAGES_COLLECTION
-      );
-      setMessages(response.documents as Message[]);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (loading) return <p>Loading messages...</p>;
-
-  return (
-    <ul className="space-y-4">
-      {messages.map((msg) => (
-        <li key={msg.$id} className="p-4 bg-white shadow rounded-lg">
-          <p className="text-lg">{msg.content}</p>
-          <div className="mt-2 text-sm text-gray-500">
-            <span>by {msg.author}</span>
-            <span className="mx-2">•</span>
-            <span>{new Date(msg.createdAt).toLocaleDateString()}</span>
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-}
+```bash
+bunx create-next-app@latest nextjs-todo-lab --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
 ```
 
-### Step 2: Add Message Form
+Choose:
+- TypeScript: Yes
+- ESLint: Yes
+- Tailwind CSS: Yes
+- `src/` directory: Yes
+- App Router: Yes
+- Turbopack: Yes
 
-Create `src/app/components/AddMessageForm.tsx`:
+Then start the app:
 
-```typescript
-'use client';
-
-import { useState } from 'react';
-import { databases, DATABASE_ID, MESSAGES_COLLECTION } from '@/lib/appwrite';
-import { ID } from 'appwrite';
-
-export default function AddMessageForm({ onMessageAdded }: { onMessageAdded: () => void }) {
-  const [content, setContent] = useState('');
-  const [author, setAuthor] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!content.trim() || !author.trim()) return;
-
-    setSubmitting(true);
-    try {
-      await databases.createDocument(
-        DATABASE_ID,
-        MESSAGES_COLLECTION,
-        ID.unique(),
-        {
-          content: content.trim(),
-          author: author.trim(),
-          createdAt: new Date().toISOString()
-        }
-      );
-      setContent('');
-      setAuthor('');
-      onMessageAdded();
-    } catch (error) {
-      console.error('Error adding message:', error);
-      alert('Failed to add message');
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="mb-8 p-6 bg-gray-50 rounded-lg">
-      <h2 className="text-xl font-semibold mb-4">Leave a Message</h2>
-      
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Your Name</label>
-        <input
-          type="text"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          className="w-full p-2 border rounded"
-          placeholder="Enter your name"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Message</label>
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="w-full p-2 border rounded h-24"
-          placeholder="Write your message..."
-          required
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={submitting}
-        className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-      >
-        {submitting ? 'Adding...' : 'Add Message'}
-      </button>
-    </form>
-  );
-}
+```bash
+cd nextjs-todo-lab
+bun run dev
 ```
 
-### Step 3: Update Main Page
+Visit `http://localhost:3000`.
 
-Replace `src/app/page.tsx`:
+### What to Notice
 
-```typescript
+- `src/app/page.tsx` is the home page
+- `src/app/layout.tsx` wraps the app
+- styles are already wired in
+- changing `page.tsx` changes what the user sees first
+
+## Part 3: Build a Small TODO App
+
+### Replace `src/app/page.tsx`
+
+```tsx
 'use client';
 
-import { useState } from 'react';
-import MessageList from './components/MessageList';
-import AddMessageForm from './components/AddMessageForm';
+import { FormEvent, useMemo, useState } from 'react';
+
+type Todo = {
+  id: number;
+  text: string;
+  done: boolean;
+};
+
+const starterTodos: Todo[] = [
+  { id: 1, text: 'Read the page structure', done: true },
+  { id: 2, text: 'Add a new todo', done: false },
+  { id: 3, text: 'Mark one as complete', done: false },
+];
 
 export default function Home() {
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [todos, setTodos] = useState<Todo[]>(starterTodos);
+  const [input, setInput] = useState('');
 
-  function handleMessageAdded() {
-    setRefreshKey(prev => prev + 1);
+  const remainingCount = useMemo(
+    () => todos.filter((todo) => !todo.done).length,
+    [todos]
+  );
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const text = input.trim();
+    if (!text) return;
+
+    setTodos((current) => [
+      {
+        id: Date.now(),
+        text,
+        done: false,
+      },
+      ...current,
+    ]);
+    setInput('');
+  }
+
+  function toggleTodo(id: number) {
+    setTodos((current) =>
+      current.map((todo) =>
+        todo.id === id ? { ...todo, done: !todo.done } : todo
+      )
+    );
+  }
+
+  function removeTodo(id: number) {
+    setTodos((current) => current.filter((todo) => todo.id !== id));
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Guestbook</h1>
-      <AddMessageForm onMessageAdded={handleMessageAdded} />
-      <MessageList key={refreshKey} />
+    <main className="min-h-screen bg-stone-100 px-6 py-12 text-stone-900">
+      <div className="mx-auto max-w-2xl rounded-3xl border border-stone-200 bg-white p-8 shadow-sm">
+        <p className="text-sm uppercase tracking-[0.3em] text-stone-500">
+          Next.js Lab
+        </p>
+        <h1 className="mt-3 text-4xl font-semibold">Simple TODO App</h1>
+        <p className="mt-3 text-stone-600">
+          This app only uses local React state. Reload the page and the tasks
+          reset. That is useful here because it makes the difference between a
+          frontend-only app and a full-stack app obvious.
+        </p>
+
+        <form onSubmit={handleSubmit} className="mt-8 flex gap-3">
+          <input
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="Add a task"
+            className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-stone-900"
+          />
+          <button
+            type="submit"
+            className="rounded-xl bg-stone-900 px-5 py-3 text-white transition hover:bg-stone-700"
+          >
+            Add
+          </button>
+        </form>
+
+        <div className="mt-6 rounded-2xl bg-stone-100 px-4 py-3 text-sm text-stone-700">
+          {remainingCount} task{remainingCount === 1 ? '' : 's'} remaining
+        </div>
+
+        <ul className="mt-6 space-y-3">
+          {todos.map((todo) => (
+            <li
+              key={todo.id}
+              className="flex items-center justify-between rounded-2xl border border-stone-200 px-4 py-4"
+            >
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={todo.done}
+                  onChange={() => toggleTodo(todo.id)}
+                  className="h-4 w-4"
+                />
+                <span className={todo.done ? 'text-stone-400 line-through' : ''}>
+                  {todo.text}
+                </span>
+              </label>
+
+              <button
+                type="button"
+                onClick={() => removeTodo(todo.id)}
+                className="text-sm text-stone-500 hover:text-red-600"
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </main>
   );
 }
 ```
 
-## Part 3: Adding Edit & Delete (30 min)
+## Part 4: What You Should Understand
 
-### Update MessageList with Edit/Delete
+After the app works, pause and explain:
 
-Add these functions to `MessageList.tsx`:
+- `page.tsx` is a route entry point
+- `'use client'` is needed because this page uses state and browser events
+- `useState` stores local UI state
+- the form updates state, not a database
+- this app is interactive, but not yet full-stack
 
-```typescript
-// Add this import
-import { Query } from 'appwrite';
+## Part 5: Manual Verification
 
-// Add these functions inside the component
-async function deleteMessage(id: string) {
-  if (!confirm('Are you sure you want to delete this message?')) return;
-  
-  try {
-    await databases.deleteDocument(
-      DATABASE_ID,
-      MESSAGES_COLLECTION,
-      id
-    );
-    loadMessages(); // Refresh the list
-  } catch (error) {
-    console.error('Error deleting message:', error);
-    alert('Failed to delete message');
-  }
-}
+You should test:
 
-async function updateMessage(id: string, newContent: string) {
-  try {
-    await databases.updateDocument(
-      DATABASE_ID,
-      MESSAGES_COLLECTION,
-      id,
-      { content: newContent }
-    );
-    loadMessages(); // Refresh the list
-  } catch (error) {
-    console.error('Error updating message:', error);
-    alert('Failed to update message');
-  }
-}
-```
+1. adding a task
+2. checking and unchecking a task
+3. deleting a task
+4. refreshing the page and noticing the data resets
 
-### Update the Message Display
+That last point matters because it sets up the need for Appwrite in the next build phase.
 
-Replace the message item rendering:
+## Debrief
 
-```typescript
-<li key={msg.$id} className="p-4 bg-white shadow rounded-lg group">
-  <p className="text-lg">{msg.content}</p>
-  <div className="mt-2 text-sm text-gray-500 flex justify-between items-center">
-    <div>
-      <span>by {msg.author}</span>
-      <span className="mx-2">•</span>
-      <span>{new Date(msg.createdAt).toLocaleDateString()}</span>
-    </div>
-    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-      <button 
-        onClick={() => {
-          const newContent = prompt('Edit message:', msg.content);
-          if (newContent && newContent !== msg.content) {
-            updateMessage(msg.$id, newContent);
-          }
-        }}
-        className="text-blue-500 hover:text-blue-700 mr-3"
-      >
-        Edit
-      </button>
-      <button 
-        onClick={() => deleteMessage(msg.$id)}
-        className="text-red-500 hover:text-red-700"
-      >
-        Delete
-      </button>
-    </div>
-  </div>
-</li>
-```
+This app proves:
+- Next.js can render UI and handle interaction
+- React state can power small local experiences
+- a database becomes necessary when the app needs persistence or shared data
 
-## Key Concepts Learned
-
-1. **Client Components**: Use `'use client'` when you need React hooks like `useState` and `useEffect`
-
-2. **State Management**: Use state to trigger re-renders when data changes
-
-3. **Error Handling**: Always wrap Appwrite calls in try-catch blocks
-
-4. **Optimistic UI**: You can update the UI immediately and roll back on error (advanced pattern)
+That is the bridge into the Appwrite-backed lessons.
 
 ## Homework
 
-1. Add a "Clear All" button that deletes all messages (with confirmation)
-2. Add validation to prevent empty messages
-3. Style the form to look nicer
-4. Add a character counter to the message textarea
+Before Lesson 3:
 
----
-
-**Next Session**: We'll clean up the code and add better structure!
+1. Make one small visual change to the TODO app on your own.
+2. Be ready to explain why the app loses its tasks after refresh.
+3. Read [Guide: Appwrite MCP Setup](guide-codex-appwrite-mcp.md).

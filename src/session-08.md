@@ -1,416 +1,90 @@
-# Session 8: File Uploads
+# Lesson 8: Imageboard Uploads
 
 **Duration**: 1.5 hours  
-**Goal**: Upload and display images using Appwrite Storage
+**Goal**: Introduce file uploads with Appwrite Storage and show how to verify storage assumptions before generating UI code
 
 ## Learning Objectives
 
-By the end of this session, students will:
-- Use Appwrite Storage for file uploads
-- Display uploaded images
-- Handle file input in forms
-- Understand basic image handling
+By the end of this lesson, you will:
+- explain the difference between file storage and database records
+- design a small upload flow
+- use Codex to add uploads in bounded steps
+- verify buckets and file references before wiring UI
+- test file type, size, and display behavior
 
-## Part 1: Storage Overview (15 min)
+## Part 1: Concept
 
-### What is Appwrite Storage?
+A database record is not the same thing as a file.
 
-- Store files (images, documents, etc.)
-- Automatic image optimization
-- Built-in CDN for fast delivery
-- Permission-based access control
+In a typical app:
 
-### Creating a Storage Bucket
+- the file lives in storage
+- the database stores metadata or the file id
+- the UI uses that reference to display the asset later
 
-1. Go to **Storage** in Appwrite Console
-2. Click **Create Bucket**
-3. Name: `images`
-4. Set permissions:
-   - Anyone can read files
-   - Only authenticated users can create
+You need to understand this before prompting for upload features.
 
-![Appwrite create bucket screen](/assets/docs/appwrite/create-bucket.png)
+## Part 2: Product Goal
 
-## Part 2: Upload Implementation (45 min)
+The lesson outcome should be:
 
-### Update Appwrite Client
+- users can upload an image for a thread
+- the image is stored in Appwrite Storage
+- the thread stores a reference to that file
+- the uploaded image can be displayed in the imageboard UI
 
-Update `src/lib/appwrite.ts`:
+## Part 3: Prompting Sequence
 
-```typescript
-import { Client, Databases, Account, Storage } from 'appwrite';
+Recommended sequence:
 
-const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1')
-  .setProject('YOUR_PROJECT_ID');
+1. inspect Appwrite buckets first
+2. prompt for an upload flow plan
+3. verify file constraints the app should enforce
+4. prompt for the upload handler
+5. test with a valid image
+6. test with an invalid file
+7. prompt for the display step
 
-export const databases = new Databases(client);
-export const account = new Account(client);
-export const storage = new Storage(client);
+### Example Prompt
 
-export const DATABASE_ID = 'main';
-export const BUCKET_ID = 'images'; // Your bucket ID
+Plan a beginner-friendly image upload flow for this imageboard app.
+
+Requirements:
+- Appwrite Storage for the file
+- threads store only the file reference
+- basic validation for file type and size
+- keep the UI plain
+- return the files and routes I should implement first
+
+## Part 4: Copy-Paste Schema Brief
+
+```text
+Imageboard upload update:
+
+Add these optional fields to threads:
+- imageFileId: string, optional
+- imageAlt: string, optional, max 120
+
+Create one storage bucket for thread images.
+
+Rules:
+- images are optional
+- the thread can still exist without an image
+- the database stores only the file reference, not the file itself
 ```
 
-### Create Upload API Route
+## Part 5: What You Must Verify
 
-Create `src/app/api/upload/route.ts`:
+You should verify:
 
-```typescript
-import { NextResponse } from 'next/server';
-import { storage, BUCKET_ID } from '@/lib/appwrite';
-import { ID } from 'appwrite';
+1. the bucket id is real
+2. the uploaded file is visible in Appwrite Storage
+3. the database stores the expected file reference
+4. broken files or invalid types fail cleanly
+5. the UI can render the uploaded asset after refresh
 
-export async function POST(request: Request) {
-  try {
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
+Keep in mind that storage bugs often come from:
 
-    if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      );
-    }
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json(
-        { error: 'Only images are allowed' },
-        { status: 400 }
-      );
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: 'File too large (max 5MB)' },
-        { status: 400 }
-      );
-    }
-
-    // Upload to Appwrite
-    const uploadedFile = await storage.createFile(
-      BUCKET_ID,
-      ID.unique(),
-      file
-    );
-
-    // Get file URL
-    const fileUrl = storage.getFileView(BUCKET_ID, uploadedFile.$id);
-
-    return NextResponse.json({
-      fileId: uploadedFile.$id,
-      url: fileUrl
-    });
-  } catch (error) {
-    console.error('Error uploading file:', error);
-    return NextResponse.json(
-      { error: 'Failed to upload file' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-### Create Upload Component
-
-Create `src/app/components/ImageUpload.tsx`:
-
-```typescript
-'use client';
-
-import { useState } from 'react';
-
-interface ImageUploadProps {
-  onUpload: (url: string) => void;
-  currentImage?: string;
-}
-
-export default function ImageUpload({ onUpload, currentImage }: ImageUploadProps) {
-  const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(currentImage);
-
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Show preview immediately
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    // Upload file
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) throw new Error('Upload failed');
-
-      const data = await response.json();
-      onUpload(data.url);
-    } catch (error) {
-      console.error('Error uploading:', error);
-      alert('Failed to upload image');
-      setPreview(currentImage); // Reset preview on error
-    } finally {
-      setUploading(false);
-    }
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-        {preview ? (
-          <div className="relative inline-block">
-            <img
-              src={preview}
-              alt="Preview"
-              className="max-h-48 rounded"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setPreview(undefined);
-                onUpload('');
-              }}
-              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div>
-            <label className="cursor-pointer">
-              <div className="text-gray-500 mb-2">Click to upload image</div>
-              <div className="text-sm text-gray-400">PNG, JPG up to 5MB</div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-                disabled={uploading}
-              />
-            </label>
-          </div>
-        )}
-      </div>
-
-      {uploading && (
-        <div className="text-center text-gray-500">Uploading...</div>
-      )}
-    </div>
-  );
-}
-```
-
-## Part 3: Using Images in Blog Posts (30 min)
-
-### Update Posts Collection
-
-Add `featuredImage` attribute to `posts` collection (string, optional).
-
-### Update New Post Page
-
-Update `src/app/blog/new/page.tsx`:
-
-```typescript
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '../../components/AuthProvider';
-import Navbar from '../../components/Navbar';
-import ImageUpload from '../../components/ImageUpload';
-
-export default function NewPost() {
-  const { user } = useAuth();
-  const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [featuredImage, setFeaturedImage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!user) {
-      setError('You must be signed in to create a post');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          content,
-          authorId: user.$id,
-          authorName: user.name,
-          featuredImage
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to create post');
-
-      router.push('/blog');
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div>
-      <Navbar />
-      <main className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Write a New Post</h1>
-
-        {error && (
-          <div className="bg-red-50 text-red-500 p-4 rounded mb-6">{error}</div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">Featured Image</label>
-            <ImageUpload onUpload={setFeaturedImage} />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Enter post title"
-              required
-              maxLength={200}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Content</label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full p-2 border rounded h-64"
-              placeholder="Write your post content..."
-              required
-            />
-          </div>
-
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {loading ? 'Publishing...' : 'Publish Post'}
-            </button>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </main>
-    </div>
-  );
-}
-```
-
-### Update Posts API to Handle Images
-
-Update `src/app/api/posts/route.ts` POST handler:
-
-```typescript
-const { title, content, authorId, authorName, featuredImage } = body;
-
-const post = await databases.createDocument(
-  DATABASE_ID,
-  POSTS_COLLECTION,
-  ID.unique(),
-  {
-    title: title.trim(),
-    content: content.trim(),
-    authorId,
-    authorName: authorName || 'Anonymous',
-    featuredImage: featuredImage || null,
-    published: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-);
-```
-
-### Display Images in Blog
-
-Update `src/app/blog/page.tsx`:
-
-```typescript
-// Inside the article mapping
-<article key={post.$id} className="bg-white rounded-lg shadow overflow-hidden">
-  {post.featuredImage && (
-    <img
-      src={post.featuredImage}
-      alt={post.title}
-      className="w-full h-48 object-cover"
-    />
-  )}
-  <div className="p-6">
-    <Link href={`/blog/${post.$id}`}>
-      <h2 className="text-2xl font-bold mb-2 hover:text-blue-500">
-        {post.title}
-      </h2>
-    </Link>
-    
-    <p className="text-gray-600 mb-4 line-clamp-3">
-      {post.content.substring(0, 200)}
-      {post.content.length > 200 && '...'}
-    </p>
-
-    <div className="text-sm text-gray-500">
-      <Link href={`/user/${post.authorId}`} className="text-blue-500 hover:underline">
-        {post.authorName}
-      </Link>
-      <span className="mx-2">•</span>
-      <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-    </div>
-  </div>
-</article>
-```
-
-## Key Concepts
-
-1. **FormData**: Use FormData for file uploads
-2. **Preview**: Show image preview before upload
-3. **Validation**: Check file type and size
-4. **Storage URL**: Use `storage.getFileView()` to get public URL
-
-## Homework
-
-1. Add image upload to user profiles (avatar)
-2. Add multiple image upload support
-3. Create an image gallery component
-4. Add drag-and-drop upload
-
----
-
-**Next Session**: Understanding permissions and security!
+- wrong bucket ids
+- wrong permissions
+- wrong assumptions about what should live in the database

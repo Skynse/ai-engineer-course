@@ -1,240 +1,198 @@
-# Session 1: Introduction & Environment Setup
+# Lesson 1: Full-Stack Foundations & Course Setup
 
 **Duration**: 1.5 hours  
-**Goal**: Get everyone set up and create their first database record
+**Goal**: Understand the core full-stack vocabulary, the workflow used in these lessons, and the tools used before building product features
 
 ## Learning Objectives
 
-By the end of this session, students will:
-- Understand what Appwrite is and why we use it
-- Have a working development environment
-- Create their first Appwrite project
-- Understand the difference between Appwrite Cloud and self-hosted Appwrite
-- Know where AI fits into the workflow and where verification is required
-- Insert data into a database
+By the end of this lesson, you will:
+- define frontend, backend, database, API, and full-stack in plain language
+- explain where Next.js, Appwrite, and Codex fit in the stack
+- understand the difference between local app code and hosted backend services
+- choose an Appwrite setup, with Cloud as the default option
+- install the core local tools needed for the upcoming build work
 
-## Part 1: Welcome & Overview (15 min)
+## Part 1: What "Full-Stack" Actually Means
 
-### What is Appwrite?
+### Full-Stack in One Sentence
 
-Appwrite is an open-source backend-as-a-service (BaaS) platform. Think of it as:
-- **Database** - Store your app's data
-- **Authentication** - Handle user logins  
-- **Storage** - Upload and serve files
-- **All managed** - No server configuration needed
+Full-stack development means building the parts users see, the parts that process logic, and the parts that store data.
 
-### Why Appwrite + Next.js?
+### Core Terms
 
-| Feature | Without Appwrite | With Appwrite |
-|---------|------------------|---------------|
-| Database setup | Hours of configuration | 5 minutes |
-| Authentication | Build from scratch | Built-in |
-| File storage | Complex setup | Drag and drop |
-| Security | Manual implementation | Automatic |
+| Term | Plain-English meaning | Example here |
+|------|------------------------|------------------------|
+| Frontend | The UI the user interacts with | A Next.js page with forms, buttons, and lists |
+| Backend | Code and services that process requests and rules | Appwrite auth, database rules, API routes |
+| Database | Where app data is stored | Messages, users, posts, comments |
+| API | The contract between parts of the system | A route that creates a post or loads messages |
+| Full-stack | Frontend + backend + data working together | A site that signs users in and saves content |
 
-### AI Assistance Throughout This Course
+### A Simple Mental Model
 
-We'll use AI tools to:
-- Generate boilerplate code
-- Debug errors
-- Explain complex concepts
-- Draft schemas and CLI commands
-- Speed up development
+Think of a basic app like this:
 
-**Pro tip**: Always review and understand AI-generated code before using it!
+1. The user clicks a button in the frontend.
+2. The frontend sends data to the backend.
+3. The backend validates the request.
+4. The backend reads or writes the database.
+5. The result comes back to the frontend.
+6. The UI updates.
 
-### Cloud vs Self-Hosted Appwrite
+![Full-stack request flow](/assets/diagrams/lesson-01-full-stack-map.png)
 
-This course supports both:
+### Where Our Tools Fit
 
-- **Appwrite Cloud**: fastest path for students who only want to learn the product workflow
-- **Self-hosted Appwrite**: best path for students who want a fully local full-stack setup
+| Tool | Role in the stack |
+|------|-------------------|
+| Next.js | Frontend framework and server route layer |
+| Appwrite | Backend platform for auth, database, storage, and permissions |
+| Codex | Build partner for planning, scaffolding, debugging, and iteration |
+| Bun | Package manager and local script runner |
 
-If you want the local stack used in this repo, read [Guide: Self-Hosting Appwrite](guide-self-hosting-appwrite.md) before moving past setup.
+## Part 2: Course Workflow
 
-If you want to use AI to generate Appwrite schema commands safely, read [Guide: AI + Appwrite CLI Workflow](guide-ai-appwrite-cli.md).
+### How The Workflow Works
 
-## Part 2: Environment Setup (30 min)
+This is not a copy-the-code course.
 
-### Step 1: Choose Your Appwrite Setup
+For most build lessons, the teaching loop is:
 
-Pick one:
+1. establish the concept and the product goal
+2. prompt Codex with a bounded task
+3. wait for the generated implementation
+4. test the result in the app, Appwrite, or both
+5. iterate until the feature matches the goal
 
-1. **Appwrite Cloud**
-   - Go to [cloud.appwrite.io](https://cloud.appwrite.io)
-   - Sign up with Google or email
-   - Create a new project
-   - Name: `ai-engineer-course`
-2. **Self-hosted Appwrite**
-   - Use the included Docker setup in `appwrite/`
-   - Follow [Guide: Self-Hosting Appwrite](guide-self-hosting-appwrite.md)
-   - Use `http://localhost:8080/v1` as your endpoint
-   - If you want the official installer flow first, use the Docker installer command from the self-hosting guide
+### What You Are Responsible For
 
-![Appwrite create project screen](/assets/docs/appwrite/create-project.png)
+You still need to:
+- understand the product requirement
+- review generated files before trusting them
+- verify schema names, permissions, and env vars
+- test real user flows
+- catch mismatches early instead of stacking hacks
 
-After the project exists, Appwrite will ask you to connect a platform. For browser apps in this course, add a Web platform and use `localhost` while developing locally.
+### What Gets Taught Without AI First
 
-![Appwrite add platform screen](/assets/docs/appwrite/add-platform.png)
+Two early areas stay more direct:
+- foundational terminology
+- a small Next.js-only app so you can understand the shape of the framework before Appwrite enters the picture
 
-If you plan to use the CLI or server-side Appwrite SDKs later in the course, the next area to pay attention to is the server integration section inside the project setup flow.
+## Part 3: Architecture Preview
 
-![Appwrite server integration screen](/assets/docs/appwrite/integrate-server.png)
+### Example: Simple TODO App
 
-### Step 2: Install Node.js
+Even a small TODO site has distinct stack layers:
 
-Check if Node.js is installed:
+- frontend: task list, form, buttons
+- state: which tasks are complete right now
+- backend: optional later step if tasks are saved remotely
+- database: optional later step if tasks persist between sessions
+
+In Lesson 2, you will build this locally first with no AI and no backend so the moving parts stay visible.
+
+### Example: Appwrite Imageboard
+
+Later, when Appwrite is added:
+
+- Next.js renders the page
+- Appwrite stores the imageboard threads and replies
+- Appwrite auth decides who the user is
+- Appwrite permissions decide who can read or write
+- Codex helps scaffold and debug the implementation
+
+## Part 4: Environment Setup
+
+### What An MCP Server Is
+
+MCP stands for Model Context Protocol.
+
+In plain English, an MCP server is a bridge between Codex and some outside system.
+
+That outside system might be:
+
+- Appwrite
+- documentation
+- Google Drive
+- a database
+- another tool or service
+
+The important idea is this:
+
+- your app backend is the thing that stores data and runs the product
+- the MCP server is the connection layer that lets Codex inspect or use that backend
+
+For this course, Appwrite is the backend.
+The Appwrite MCP server is the tool connection that lets Codex inspect the real Appwrite project instead of guessing collection names, bucket ids, or permissions.
+
+Without MCP:
+
+- Codex can still read your code
+- Codex can still make suggestions
+- Codex may guess wrong about what exists in the live backend
+
+With MCP:
+
+- Codex can inspect the real Appwrite project state
+- Codex can compare live backend resources to your code
+- Codex is less likely to invent field names or storage buckets that do not exist
+
+That is why MCP matters in this workflow. It improves accuracy when the question is about the real backend, not just the local codebase.
+
+### Install the Local Tools
+
+You should have:
+
+1. Node.js 20+ installed
+2. Bun installed
+3. VS Code or another editor
+4. Codex available in the environment you will use
+
+Check the local tools:
+
 ```bash
 node --version
+bun --version
 ```
 
-Should show version 18 or higher. If not:
-- Download from [nodejs.org](https://nodejs.org)
-- Install LTS version
+### Choose an Appwrite Setup
 
-### Step 3: Create Next.js Project
+Two valid setup paths are supported:
 
-```bash
-npx create-next-app@latest guestbook --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
-```
+1. Appwrite Cloud as the default and fastest path
+2. Self-hosted Appwrite as an optional local-first path
 
-When prompted, select:
-- ✓ TypeScript
-- ✓ ESLint
-- ✓ Tailwind CSS
-- ✓ `src` directory
-- ✓ App Router
-- ✓ Import alias `@/*`
+Use Appwrite Cloud unless you specifically want to run Appwrite locally.
 
-### Step 4: Install Appwrite SDK and CLI
+Use [Guide: Self-Hosting Appwrite (Optional)](guide-self-hosting-appwrite.md) only if you want the local Docker-based setup used in this repo.
 
-```bash
-cd guestbook
-npm install appwrite
-npm install -g appwrite-cli
-```
+### Read These Before Lesson 3
 
-The CLI is optional for the first app, but required later when we move from manual console setup to faster, repeatable AI-assisted workflows.
+- [Guide: Install Codex](guide-codex-install.md)
+- [Guide: Codex Website Workflow](guide-codex-website-workflow.md)
+- [Guide: Appwrite MCP Setup](guide-codex-appwrite-mcp.md)
+- [Guide: AI + Appwrite CLI Workflow](guide-ai-appwrite-cli.md)
 
-## Part 3: First Database Collection (30 min)
+## Part 5: Vocabulary Drill
 
-### Creating a Collection in Appwrite Console
+Be able to answer these before moving on:
 
-1. In your Appwrite project, click **Databases**
-2. Click **Create Database**
-3. Name: `main`
-4. Click **Create Collection**
-5. Name: `messages`
+- What is the difference between frontend and backend?
+- What does a database do?
+- Why is Appwrite not the same thing as Next.js?
+- Why is Codex useful in this workflow?
+- Why do we still verify generated code?
 
-To wire your app to Appwrite, you will need the Project ID from your project settings.
-
-![Appwrite project settings showing the Project ID](/assets/docs/appwrite/project-settings-project-id.png)
-
-### Adding Attributes
-
-Add these fields to your `messages` collection:
-
-| Attribute Name | Type | Required |
-|----------------|------|----------|
-| content | string | Yes |
-| author | string | Yes |
-| createdAt | datetime | Yes |
-
-### Setting Permissions
-
-For now, we'll allow anyone to read/write (we'll secure this later):
-
-1. Go to collection settings
-2. Under Permissions, add:
-   - `any` with **Create** permission
-   - `any` with **Read** permission
-
-## Part 4: Writing Our First Code (15 min)
-
-### Create Appwrite Configuration
-
-Create `src/lib/appwrite.ts`:
-
-```typescript
-import { Client, Databases } from 'appwrite';
-
-const client = new Client()
-  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
-  .setProject('YOUR_PROJECT_ID');
-
-export const databases = new Databases(client);
-export const DATABASE_ID = 'main';
-export const MESSAGES_COLLECTION = 'messages';
-```
-
-### Test with a Simple Read-Only Page
-
-Replace `src/app/page.tsx`:
-
-```typescript
-import { databases, DATABASE_ID, MESSAGES_COLLECTION } from '@/lib/appwrite';
-
-export default async function Home() {
-  // Fetch all messages
-  const messages = await databases.listDocuments(
-    DATABASE_ID,
-    MESSAGES_COLLECTION
-  );
-
-  return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Guestbook</h1>
-      <ul className="space-y-2">
-        {messages.documents.map((msg) => (
-          <li key={msg.$id} className="p-4 bg-gray-100 rounded">
-            <p>{msg.content}</p>
-            <p className="text-sm text-gray-600">by {msg.author}</p>
-          </li>
-        ))}
-      </ul>
-    </main>
-  );
-}
-```
-
-Do not create a document directly inside the page render. If you write inside `Home()`, every refresh or re-render creates another record. We only want to verify that the app can read from Appwrite in Session 1.
-
-To create your first document, add it once in the Appwrite console:
-
-1. Open the `messages` collection
-2. Click **Create Document**
-3. Add:
-   - `content`: `Hello from my first app!`
-   - `author`: `Student`
-   - `createdAt`: current date/time
-
-### Run the App
-
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000` and see your first message!
+The target outcome of this session is not a finished app. The target outcome is being able to describe the stack correctly and understand why the course alternates between direct explanation and Codex-assisted implementation.
 
 ## Homework
 
-1. Create your own Appwrite project
-2. Set up the development environment
-3. Add 3 different messages to your guestbook
-4. Take a screenshot of your working app
-5. Decide whether you will stay on Appwrite Cloud or move to the self-hosted setup before Session 4
+Before Lesson 2:
 
-## Common Issues
-
-**Error: "Project not found"**
-- Check that your Project ID is correct in `appwrite.ts`
-
-**Error: "Permission denied"**
-- Make sure you've set collection permissions to allow "any" to create/read
-
-**Port 3000 already in use**
-- Run `npx next dev -p 3001` to use a different port
-
----
-
-**Next Session**: We'll build a proper guestbook with a form to add messages!
+1. Confirm `node` and `bun` both run locally.
+2. Decide whether you are using Appwrite Cloud or, optionally, self-hosted Appwrite.
+3. Install Codex and confirm it launches.
+4. Read the Codex workflow guide.
+5. Read the Appwrite MCP setup guide.
+6. Only read the self-hosting guide if you intentionally want a local Appwrite setup.

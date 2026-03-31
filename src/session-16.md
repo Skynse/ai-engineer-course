@@ -1,17 +1,17 @@
-# Session 16: Final Project Building & Review
+# Lesson 16: Final Project Building & Review
 
 **Duration**: 1.5 hours  
-**Goal**: Build core features and get help with blockers
+**Goal**: Build core features with Codex, verify them, and unblock the final project
 
-## Session Structure
+## Lesson Structure
 
-This is a **work session** with instructor support. You'll work on your final project while getting help as needed.
+This is a **work lesson** with instructor support. You'll work on your final project while getting help as needed.
 
 ## Part 1: Quick Check-in (10 min)
 
 ### Status Updates
 
-Each student shares (30 seconds each):
+Each person shares briefly:
 - What project did you choose?
 - What's your progress so far?
 - What's your biggest blocker?
@@ -23,32 +23,42 @@ Based on past sessions, watch out for:
 1. **Permission errors** - Check collection settings
 2. **API route issues** - Test endpoints in browser/Postman
 3. **Image upload** - Verify bucket permissions
-4. **Authentication** - Session handling
+4. **Authentication** - Auth session handling
 5. **Database queries** - Check indexes and syntax
 
-## Part 2: Work Session (60 min)
+## Part 2: Work Block
 
 ### Recommended Workflow
 
-**Step 1: Database Setup**
+**Step 1: Clarify The Next Slice**
+- Pick one feature small enough to finish today
+- Write the exact outcome before prompting Codex
+
+**Step 2: Database Setup**
 - Verify all collections created
 - Check permissions are correct
 - Add sample data for testing
 
-**Step 2: API Routes**
+**Step 3: Prompt Codex To Implement It**
+- Give Codex the files, constraints, and expected behavior
+- Ask for the minimum working version first
+- Avoid asking for the whole app in one prompt
+
+**Step 4: API Routes**
 - Build one CRUD route at a time
 - Test each route before moving on
-- Use console.log to debug
+- Use logs and error messages to debug
 
-**Step 3: Frontend Components**
+**Step 5: Frontend Components**
 - Start with data fetching
 - Build presentational components
 - Connect to API
 
-**Step 4: Integration**
+**Step 6: Integration**
 - Wire everything together
 - Test user flows
 - Fix bugs
+- Ask for targeted refactors after the flow works
 
 ### Getting Unstuck
 
@@ -59,7 +69,7 @@ Based on past sessions, watch out for:
    - What's the specific error?
 
 2. **Check the obvious**
-   - Is the server running? `npm run dev`
+   - Is the server running? `bun run dev`
    - Is the database accessible?
    - Are environment variables set?
 
@@ -68,11 +78,20 @@ Based on past sessions, watch out for:
    - Test with hardcoded data
    - Build minimal reproduction
 
-4. **Use AI assistance**
+4. **Use Codex with enough context**
    ```
-   "I'm getting this error: [paste error]
-   Here's my code: [paste relevant code]
-   What's wrong?"
+   I'm getting this error: [paste error]
+
+   Expected behavior:
+   [what should happen]
+
+   Relevant files:
+   [paste file names or snippets]
+
+   What changed recently:
+   [brief note]
+
+   Explain the likely cause first, then patch the minimum code needed.
    ```
 
 5. **Ask for help**
@@ -90,18 +109,19 @@ Before asking for help, check:
 - [ ] Correct HTTP methods (GET, POST, etc.)
 - [ ] Proper async/await usage
 - [ ] Error handling in place
+- [ ] Prompt and implementation still match each other
 
 ## Part 3: Mini-Demos (20 min)
 
 ### Show and Tell
 
-3-4 students volunteer to show their progress:
+3-4 people volunteer to show their progress:
 - 3-minute demo
 - 2-minute feedback from instructor and peers
 
 ### Common Issues Discussion
 
-We'll address common problems found during work session:
+We'll address common problems found during the work block:
 - Database connection issues
 - Authentication flow problems
 - Image upload troubleshooting
@@ -116,7 +136,7 @@ We'll address common problems found during work session:
 import { Client, Databases, Account, Storage } from 'appwrite';
 
 const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1')
+  .setEndpoint('https://<REGION>.cloud.appwrite.io/v1')
   .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!);
 
 export const databases = new Databases(client);
@@ -247,18 +267,19 @@ Before you finish:
 ## Final Project Tips
 
 1. **Start Simple**: Build MVP first, add features later
-2. **Test Early**: Don't wait until the end to test
-3. **Commit Often**: Save your work frequently
-4. **Ask Early**: Don't wait 3 days with a blocker
-5. **Focus on Working**: Better to have fewer working features than many broken ones
+2. **Prompt Smaller**: Ask for one slice at a time
+3. **Test Early**: Don't wait until the end to test
+4. **Commit Often**: Save your work frequently
+5. **Ask Early**: Don't wait 3 days with a blocker
+6. **Focus on Working**: Better to have fewer working features than many broken ones
 
-## Post-Session Support
+## Post-Lesson Support
 
-After this session:
+After this lesson:
 - Instructor available via chat/email
 - Office hours schedule posted
 - Peer help encouraged
-- AI assistants available
+- AI tooling available for iteration between office-hour check-ins
 
 ## You're Almost Done!
 
@@ -266,7 +287,7 @@ After 2-3 weeks of building:
 - Deploy your app
 - Record your presentation
 - Submit everything
-- Celebrate! 🎉
+- Celebrate!
 
 ## Resources
 
@@ -280,12 +301,13 @@ After 2-3 weeks of building:
 **Congratulations on completing the course!**
 
 You now have the skills to build full-stack applications with:
-- ✅ Next.js frontend
-- ✅ Appwrite backend
-- ✅ Authentication
-- ✅ Database operations
-- ✅ File uploads
-- ✅ API design
-- ✅ Responsive UI
+- Next.js frontend
+- Appwrite backend
+- Authentication
+- Database operations
+- File uploads
+- API design
+- Responsive UI
+- A repeatable Codex workflow for building and debugging product features
 
 **Keep building, keep learning!**

@@ -405,6 +405,46 @@ select {
   padding-left: 22px;
 }
 
+.lesson-content table {
+  width: 100%;
+  margin: 20px 0 28px;
+  border-collapse: collapse;
+  table-layout: auto;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: table;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.lesson-content thead {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.lesson-content th,
+.lesson-content td {
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+  min-width: 140px;
+  white-space: normal;
+  line-height: 1.65;
+}
+
+.lesson-content th {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.lesson-content td {
+  color: var(--text-soft);
+}
+
+.lesson-content tr:last-child td {
+  border-bottom: none;
+}
+
 .lesson-content code {
   font-family: "JetBrains Mono", "SFMono-Regular", monospace;
   font-size: 0.92em;
@@ -447,12 +487,21 @@ select {
 
 .lesson-content img {
   display: block;
-  width: 100%;
+  width: min(100%, 820px);
+  max-height: 520px;
+  object-fit: contain;
   margin: 22px 0 28px;
+  margin-left: auto;
+  margin-right: auto;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.03);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.lesson-content img[src*="/assets/diagrams/"] {
+  width: min(100%, 760px);
+  max-height: 460px;
 }
 
 .lesson-head {

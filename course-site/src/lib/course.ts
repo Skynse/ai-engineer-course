@@ -89,16 +89,35 @@ const languageAliases: Record<string, string> = {
 
 const supportedLanguages = new Set(highlighter.getLoadedLanguages().map(String));
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function renderPlainCode(text: string, language: string) {
+  const languageClass = language ? ` language-${escapeHtml(language)}` : '';
+  return `<pre class="shiki fallback-code"><code class="${languageClass}">${escapeHtml(text)}</code></pre>`;
+}
+
 const renderer = new marked.Renderer();
 renderer.code = ({ text, lang }) => {
   const requested = (lang ?? '').trim().toLowerCase();
   const language = languageAliases[requested] ?? requested;
   const resolvedLanguage = supportedLanguages.has(language) ? language : 'text';
 
-  return highlighter.codeToHtml(text, {
-    lang: resolvedLanguage,
-    theme: 'github-dark',
-  });
+  try {
+    return highlighter.codeToHtml(text, {
+      lang: resolvedLanguage,
+      theme: 'github-dark',
+    });
+  } catch (error) {
+    console.error(`Shiki failed for language "${resolvedLanguage}". Falling back to plain code.`, error);
+    return renderPlainCode(text, requested || resolvedLanguage);
+  }
 };
 
 marked.use({ renderer });
@@ -106,36 +125,48 @@ marked.use({ renderer });
 const courseSource: { title: string; subtitle: string; modules: ModuleSource[] } = {
   title: 'AI Engineer: From Zero to Full-Stack',
   subtitle:
-    'A polished static syllabus shell for a beginner full-stack AI engineering course, built from the markdown lessons already in this repo.',
+    'A polished static syllabus shell for a beginner full-stack AI engineering course where you use Codex to build real product features with verification.',
   modules: [
     {
       slug: 'setup',
       code: 'M1',
       title: 'Setup & Infrastructure',
-      description: 'Environment setup, self-hosting, and the AI + CLI workflow used to scaffold backend structure safely.',
+      description: 'Full-stack vocabulary, Next.js setup, the default Appwrite Cloud path, and the Codex, MCP, and CLI patterns used before building Appwrite-backed features.',
       image: withBase('/assets/screenshots/social/social1.png'),
       lessons: [
         { slug: 'session-01', source: 'session-01.md', number: '1.1' },
-        { slug: 'guide-self-hosting-appwrite', source: 'guide-self-hosting-appwrite.md', number: '1.2' },
-        { slug: 'guide-ai-appwrite-cli', source: 'guide-ai-appwrite-cli.md', number: '1.3' },
+        { slug: 'guide-codex-install', source: 'guide-codex-install.md', number: '1.2' },
+        { slug: 'session-02', source: 'session-02.md', number: '1.3' },
+        { slug: 'guide-codex-website-workflow', source: 'guide-codex-website-workflow.md', number: '1.4' },
+        { slug: 'guide-codex-appwrite-mcp', source: 'guide-codex-appwrite-mcp.md', number: '1.5' },
+        { slug: 'guide-ai-appwrite-cli', source: 'guide-ai-appwrite-cli.md', number: '1.6' },
+      ],
+    },
+    {
+      slug: 'optional-paths',
+      code: 'GX',
+      title: 'Optional Paths',
+      description: 'Setup material that is useful for a minority of learners, including running Appwrite locally instead of using the default Cloud path.',
+      image: withBase('/assets/screenshots/social/social1.png'),
+      lessons: [
+        { slug: 'guide-self-hosting-appwrite', source: 'guide-self-hosting-appwrite.md', number: 'X.1' },
       ],
     },
     {
       slug: 'foundation',
       code: 'M2',
-      title: 'Core Full-Stack Patterns',
-      description: 'CRUD, auth, profiles, relationships, uploads, permissions, and querying with Appwrite and Next.js.',
+      title: 'Build an Imageboard',
+      description: 'One continuous imageboard app that grows through threads, auth, profiles, boards, replies, uploads, permissions, and search.',
       image: withBase('/assets/screenshots/recipe/home1.png'),
       lessons: [
-        { slug: 'session-02', source: 'session-02.md', number: '2.1' },
-        { slug: 'session-03', source: 'session-03.md', number: '2.2' },
-        { slug: 'session-04', source: 'session-04.md', number: '2.3' },
-        { slug: 'session-05', source: 'session-05.md', number: '2.4' },
-        { slug: 'session-06', source: 'session-06.md', number: '2.5' },
-        { slug: 'session-07', source: 'session-07.md', number: '2.6' },
-        { slug: 'session-08', source: 'session-08.md', number: '2.7' },
-        { slug: 'session-09', source: 'session-09.md', number: '2.8' },
-        { slug: 'session-10', source: 'session-10.md', number: '2.9' },
+        { slug: 'session-03', source: 'session-03.md', number: '2.1' },
+        { slug: 'session-04', source: 'session-04.md', number: '2.2' },
+        { slug: 'session-05', source: 'session-05.md', number: '2.3' },
+        { slug: 'session-06', source: 'session-06.md', number: '2.4' },
+        { slug: 'session-07', source: 'session-07.md', number: '2.5' },
+        { slug: 'session-08', source: 'session-08.md', number: '2.6' },
+        { slug: 'session-09', source: 'session-09.md', number: '2.7' },
+        { slug: 'session-10', source: 'session-10.md', number: '2.8' },
       ],
     },
     {
@@ -171,7 +202,7 @@ function extractTitle(markdown: string, fallback: string) {
 }
 
 function stripLeadingH1(markdown: string) {
-  return markdown.replace(/^#\s+.+\n+/, '');
+  return markdown.replace(/^\uFEFF?\s*#\s+.+(?:\r?\n)+/, '');
 }
 
 function extractExcerpt(markdown: string) {

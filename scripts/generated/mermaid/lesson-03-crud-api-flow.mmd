@@ -1,0 +1,22 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'basis'}, 'themeVariables': {'fontFamily': 'Inter, ui-sans-serif, system-ui', 'primaryTextColor': '#182033', 'lineColor': '#314056', 'tertiaryColor': '#fffdfa'}}}%%
+flowchart TB
+%% CRUD Through An API Route
+%% The beginner-friendly Appwrite-backed imageboard thread flow
+classDef defaultNode fill:#fffdfa,stroke:#243042,stroke-width:2px,color:#182033;
+classDef accent fill:#dff3f7,stroke:#126e82,stroke-width:2px,color:#182033;
+classDef rowGroup fill:transparent,stroke:transparent,color:transparent;
+subgraph row_0[" "]
+direction LR
+ui["UI<br/>form or list"]:::accent
+api["Next.js API route<br/>validate and shape data"]:::defaultNode
+appwrite["Appwrite<br/>Databases / Auth / Storage"]:::defaultNode
+end
+class row_0 rowGroup;
+subgraph row_1[" "]
+direction LR
+verify["Verify in browser<br/>and Appwrite"]:::accent
+end
+class row_1 rowGroup;
+ui -->|GET / POST| api
+api -->|CRUD| appwrite
+appwrite -->|data changed| verify

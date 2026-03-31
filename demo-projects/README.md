@@ -90,7 +90,7 @@ Create `.env.local` in each project:
 
 ```env
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+NEXT_PUBLIC_APPWRITE_ENDPOINT=https://<REGION>.cloud.appwrite.io/v1
 NEXT_PUBLIC_DATABASE_ID=your_database_id
 NEXT_PUBLIC_COLLECTION_ID=your_collection_id
 ```

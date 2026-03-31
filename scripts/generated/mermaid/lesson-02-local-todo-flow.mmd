@@ -1,0 +1,22 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'basis'}, 'themeVariables': {'fontFamily': 'Inter, ui-sans-serif, system-ui', 'primaryTextColor': '#182033', 'lineColor': '#314056', 'tertiaryColor': '#fffdfa'}}}%%
+flowchart TB
+%% Local TODO App Flow
+%% What happens before a backend is added
+classDef defaultNode fill:#fffdfa,stroke:#243042,stroke-width:2px,color:#182033;
+classDef accent fill:#dff3f7,stroke:#126e82,stroke-width:2px,color:#182033;
+classDef rowGroup fill:transparent,stroke:transparent,color:transparent;
+subgraph row_0[" "]
+direction LR
+input["You type a task"]:::accent
+state["React state<br/>updates locally"]:::defaultNode
+render["Page re-renders<br/>with the new list"]:::defaultNode
+end
+class row_0 rowGroup;
+subgraph row_1[" "]
+direction LR
+refresh["Browser refresh<br/>resets the data"]:::accent
+end
+class row_1 rowGroup;
+input -->|submit| state
+state -->|render| render
+render -->|reload| refresh

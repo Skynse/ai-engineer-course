@@ -70,7 +70,7 @@ Next.js project scaffolded with:
 
 ### Building Recipe Collection & Social Feed
 
-These projects follow the same pattern as Task Manager. Students can build them by:
+These projects follow the same pattern as Task Manager. You can build them by:
 
 1. Extracting the zip files
 2. Following the course session notes (sessions 12-13)
@@ -91,12 +91,12 @@ These projects follow the same pattern as Task Manager. Students can build them 
 ## Learning Path
 
 1. **Start here**: Use Task Manager as a complete reference
-2. **Practice**: Build Recipe Collection following Session 12
-3. **Challenge**: Build Social Feed following Session 13
+2. **Practice**: Build Recipe Collection following Lesson 12
+3. **Challenge**: Build Social Feed following Lesson 13
 
 ## Task Manager Features
 
-### What Students Learn
+### What You Learn
 
 From the complete Task Manager implementation:
 
@@ -169,10 +169,10 @@ task-manager/
 ### For Course Instructors
 
 1. **Review Task Manager** - It's complete and ready
-2. **Complete other demos** - Or have students build them as exercises
+2. **Complete other demos** - Or build them as exercises
 3. **Add to course materials** - Include zips in distribution
 
-### For Students
+### For Learners
 
 1. **Study Task Manager** - Read the code, understand the patterns
 2. **Run it locally** - Get it working with your Appwrite setup

@@ -1,11 +1,11 @@
-# Session 14: Styling & Polish
+# Lesson 14: Styling & Polish
 
 **Duration**: 1.5 hours  
 **Goal**: Make all our apps look professional
 
 ## Learning Objectives
 
-By the end of this session, students will:
+By the end of this lesson, you will:
 - Apply consistent styling across apps
 - Use Tailwind effectively
 - Add loading states and animations
@@ -299,4 +299,4 @@ Apply to all three demo apps:
 
 ---
 
-**Next Session**: Final Project Planning!
+**Next Lesson**: Final Project Planning!

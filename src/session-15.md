@@ -1,11 +1,11 @@
-# Session 15: Final Project Planning
+# Lesson 15: Final Project Planning
 
 **Duration**: 1.5 hours  
-**Goal**: Plan and design final projects
+**Goal**: Turn a project idea into a spec and AI-ready build plan
 
 ## Overview
 
-Students will work on a custom full-stack application for the next 2-3 weeks. Today, we'll plan and design these projects.
+You will work on a custom full-stack application for the next 2-3 weeks. Today is about turning an idea into a scoped product brief, schema plan, page map, and a sequence of prompts that can actually drive implementation.
 
 ## Project Options
 
@@ -43,7 +43,7 @@ An app for creating and managing events
 - `categories` - event types
 
 ### Option 3: Study Notes
-A note-taking app for students
+A note-taking app
 
 **Features:**
 - User authentication
@@ -74,13 +74,23 @@ Give your project a catchy name!
 ### 2. Problem Statement
 What problem does your app solve? (2-3 sentences)
 
+### 2.5 Build Prompt
+Write the prompt you will give Codex to scaffold the project.
+
+Include:
+- app concept
+- target user
+- core features
+- stack constraints
+- what not to build yet
+
 ### 3. User Stories
 Write 3-5 user stories:
 - As a [type of user], I want [goal] so that [benefit]
 
 Example:
 - As a book lover, I want to track books I've read so that I can remember my favorites
-- As a student, I want to organize my notes by subject so that I can study efficiently
+- As a user, I want to organize my notes by subject so that I can study efficiently
 
 ### 4. Features List
 List all features (must-haves and nice-to-haves):
@@ -173,14 +183,15 @@ Plan your 2-3 weeks:
 Fill out the planning template above
 
 ### Phase 3: Database Design (20 min)
-- Create collections in Appwrite console
-- Add attributes and set permissions
+- Ask Codex for a schema plan first
+- Review the plan and simplify it
+- Create collections in Appwrite console or via CLI
 - Test with sample data
 
 ### Phase 4: Initial Setup (10 min)
 - Create Next.js project
 - Install dependencies
-- Set up basic folder structure
+- Ask it to scaffold the initial folder structure and first pages
 
 ## Requirements Checklist
 
@@ -232,6 +243,7 @@ Prepare a 5-10 minute presentation covering:
    - Tech stack used
    - Database design
    - Architecture decisions
+   - How you used your AI tools to move the project forward
 
 3. **Challenges & Learnings** (1-2 min)
    - What was difficult?
@@ -246,21 +258,35 @@ Prepare a 5-10 minute presentation covering:
 - **Appwrite Docs**: appwrite.io/docs
 - **Next.js Docs**: nextjs.org/docs
 - **Tailwind Docs**: tailwindcss.com/docs
-- **Course Materials**: Link to session notes
+- **Course Materials**: Link to lesson notes
 
 ## Questions to Ask Before Starting
 
 1. Is my scope realistic for 2-3 weeks?
 2. Do I understand the database relationships?
-3. Have I planned the API endpoints?
-4. Do I have a clear idea of the UI?
-5. What are the biggest technical risks?
+3. Can I describe the MVP clearly enough for Codex to scaffold it?
+4. Have I planned the API endpoints?
+5. Do I have a clear idea of the UI?
+6. What are the biggest technical risks?
+
+## AI-Assisted Build Sequence
+
+Leave Lesson 15 with prompts ready for the first build day.
+
+Recommended sequence:
+
+1. Ask Codex to review the project brief and identify missing requirements
+2. Ask it for a file and route plan
+3. Ask it for an Appwrite schema plan
+4. Verify the plan before creating collections
+5. Ask it to scaffold the shell of the app
+6. Implement one vertical slice at a time
 
 ## Getting Help
 
 During the project period, you can:
-- Review session notes
-- Ask AI assistants for help
+- Review lesson notes
+- Ask Codex for help with implementation, debugging, and refactors
 - Post in course forum/chat
 - Schedule office hours with instructor
 - Collaborate with classmates (but code your own project)
@@ -275,4 +301,4 @@ Submit by the deadline:
 
 ---
 
-**Next Session**: Final project building and Q&A!
+**Next Lesson**: Final project building and Q&A!

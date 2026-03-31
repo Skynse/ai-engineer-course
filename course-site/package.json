@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "diagrams": "python3 ../scripts/generate_diagrams.py --render-png"
   },
   "type": "module",
   "private": true,
@@ -17,5 +18,8 @@
     "marked": "^17.0.5",
     "marked-highlight": "^2.2.3",
     "shiki": "^4.0.2"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.6.0"
   }
 }

@@ -2,7 +2,7 @@
 
 [![Deploy](https://github.com/Skynse/ai-engineer-course/actions/workflows/deploy.yml/badge.svg)](https://github.com/Skynse/ai-engineer-course/actions/workflows/deploy.yml)
 
-A comprehensive 16-session course teaching full-stack development with Next.js and Appwrite.
+A 16-lesson full-stack course where you use Codex to build websites and apps with Next.js and Appwrite.
 
 ## Live Course Website
 
@@ -10,19 +10,19 @@ A comprehensive 16-session course teaching full-stack development with Next.js a
 
 ## Course Overview
 
-- **Duration**: 16 Sessions (1.5 hours each) + Final Project Period
-- **Tech Stack**: Next.js 16, Appwrite, TypeScript, Tailwind CSS
+- **Duration**: 16 Lessons (1.5 hours each) + Final Project Period
+- **Tech Stack**: Next.js 16, Appwrite, TypeScript, Tailwind CSS, Bun
 - **Prerequisites**: Basic JavaScript/React knowledge
-- **Approach**: Learn by building, AI-assisted development
+- **Approach**: Learn by building, Codex-first development with verification
 
-## What Students Will Build
+## What You Will Build
 
-1. **Guestbook** - Learn Appwrite basics
-2. **Blog with Comments** - Master relationships
-3. **Task Manager** - Practice CRUD operations
-4. **Recipe Collection** - Handle file uploads
-5. **Social Feed** - Complex data relationships
-6. **Final Project** - Custom full-stack application
+1. **Next.js TODO Lab** - Learn the shape of a frontend app before adding a backend
+2. **Imageboard** - Build a continuous Appwrite-backed app across CRUD, auth, replies, uploads, and search
+4. **Task Manager** - Practice CRUD operations
+5. **Recipe Collection** - Handle file uploads
+6. **Social Feed** - Complex data relationships
+7. **Final Project** - Custom full-stack application
 
 ## Repository Structure
 
@@ -30,12 +30,11 @@ A comprehensive 16-session course teaching full-stack development with Next.js a
 .
 ├── src/                      # Source markdown files
 │   ├── README.md            # Course overview
-│   ├── session-01.md        # Session 1: Introduction & Setup
-│   ├── session-02.md        # Session 2: Basic CRUD Operations
-│   ├── ...                  # Sessions 3-16
+│   ├── session-01.md        # Lesson 1: Full-Stack Foundations & Course Setup
+│   ├── session-02.md        # Lesson 2: Next.js Introduction & First TODO App
+│   ├── ...                  # Lessons 3-16
 │   └── SUMMARY.md           # Navigation
-├── book.toml                # mdBook configuration
-├── custom.css               # Styling
+├── course-site/             # Astro course website
 ├── demo-projects/           # Working demo applications
 │   ├── task-manager.zip     # Complete reference implementation
 │   ├── recipe-collection.zip # Project template
@@ -59,25 +58,25 @@ A fully working task management application with:
 **Status**: Ready to use immediately!
 
 ### 🔄 Recipe Collection (Template)
-Next.js project scaffolded for students to build following Session 12.
+Next.js project scaffolded for you to build following Lesson 12.
 
 ### 🔄 Social Feed (Template)
-Next.js project scaffolded for students to build following Session 13.
+Next.js project scaffolded for you to build following Lesson 13.
 
-## Session Breakdown
+## Lesson Breakdown
 
-| Session | Topic | Project |
+| Lesson | Topic | Project |
 |---------|-------|---------|
-| 1 | Introduction & Setup | Guestbook initialized |
-| 2 | Basic CRUD Operations | Complete Guestbook |
-| 3 | Next.js Integration | Guestbook with forms |
-| 4 | Simple Authentication | Auth-enabled Guestbook |
-| 5 | User Profiles | Profile system |
-| 6 | Relationships | Simple Blog |
-| 7 | Comments System | Blog with comments |
-| 8 | File Uploads | Photo gallery feature |
-| 9 | Permissions | Private posts |
-| 10 | Queries & Search | Search functionality |
+| 1 | Full-Stack Foundations & Course Setup | Terminology + workflow |
+| 2 | Next.js Introduction & First TODO App | Local-only TODO lab |
+| 3 | Imageboard Threads, CRUD, and the First Appwrite Build Loop | Text-only imageboard threads |
+| 4 | Imageboard Authentication | Signed-in posting flow |
+| 5 | Imageboard User Profiles | Profile system |
+| 6 | Imageboard Boards and Thread Relationships | Boards + threads |
+| 7 | Imageboard Replies | Thread replies |
+| 8 | Imageboard Uploads | Thread image uploads |
+| 9 | Imageboard Permissions & Security Basics | Safer posting permissions |
+| 10 | Imageboard Queries, Search & Filtering | Thread search and filters |
 | 11 | Demo App 1 | Task Manager |
 | 12 | Demo App 2 | Recipe Collection |
 | 13 | Demo App 3 | Social Feed |
@@ -91,29 +90,31 @@ Next.js project scaffolded for students to build following Session 13.
 
 1. **View the course**: Visit https://skynse.github.io/ai-engineer-course
 2. **Download demo projects**: Extract from `demo-projects/` folder
-3. **Set up Appwrite**: Follow setup instructions in each project README
+3. **Review the Codex workflow**: Start with `src/guide-codex-website-workflow.md`
+4. **Connect Codex to Appwrite context**: Read `src/guide-codex-appwrite-mcp.md`
+5. **Set up Appwrite**: Follow setup instructions in each project README
 
-### For Students
+### For Learners
 
 1. **Read the course** online
-2. **Build along** with each session
-3. **Use Task Manager** as a complete reference
-4. **Create your own** Recipe Collection and Social Feed
-5. **Complete final project** to graduate!
+2. **Install Codex first** by following `src/guide-codex-install.md`
+3. **Build Lesson 2 directly** to understand the Next.js basics without AI
+4. **Use Codex to build along** with the Appwrite-backed lessons
+5. **Use Task Manager** as a complete reference
+6. **Create your own** Recipe Collection and Social Feed
+7. **Complete final project** to graduate!
 
 ## Local Development
 
 To edit and preview the course locally:
 
 ```bash
-# Install mdBook
-cargo install mdbook
+# Install dependencies
+cd course-site
+bun install
 
-# Serve locally
-mdbook serve
-
-# Build
-mdbook build
+# Preview locally
+bun run dev
 ```
 
 ## Contributing
@@ -134,7 +135,7 @@ This course is designed for educational use. Feel free to:
 
 - **Course Author**: Coding Minds
 - **Technologies**: Next.js, Appwrite, Tailwind CSS, TypeScript
-- **Built with**: mdBook
+- **Built with**: Astro
 
 ## License
 
@@ -142,4 +143,4 @@ MIT License - Free for educational use!
 
 ---
 
-**Ready to build the next generation of full-stack developers! 🚀**
+**Ready to build real full-stack apps with modern AI tooling.**

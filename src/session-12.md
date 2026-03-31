@@ -1,4 +1,4 @@
-# Session 12: Recipe Collection Demo
+# Lesson 12: Recipe Collection Demo
 
 **Duration**: 1.5 hours  
 **Goal**: Build a recipe app with storage-backed images and richer document fields
@@ -13,11 +13,11 @@ A recipe collection app with:
 - category, cooking time, and servings metadata
 - edit and delete flows
 
-## Why This Session Matters
+## Why This Lesson Matters
 
-This session moves from simple records to shaped content.
+This lesson moves from simple records to shaped content.
 
-A recipe is a better teaching example than a guestbook message because it forces students to model:
+A recipe is a better teaching example than a simple thread post because it forces you to model:
 
 - text fields
 - number fields
@@ -91,7 +91,7 @@ await databases.createDocument(DATABASE_ID, RECIPES_COLLECTION_ID, ID.unique(), 
 
 ### 4. Edit Flows Need To Respect Existing Images
 
-When students edit a recipe, they should understand the difference between:
+When you edit a recipe, understand the difference between:
 
 - keeping the current image
 - replacing the current image
@@ -112,16 +112,16 @@ components/
 
 ## Implementation Notes
 
-1. Validate that students always keep at least one ingredient and one instruction.
+1. Validate that you always keep at least one ingredient and one instruction.
 2. Make category options explicit rather than letting AI invent inconsistent category names.
-3. Show students how to generate image URLs from Appwrite Storage using the stored `imageId`.
+3. Generate image URLs from Appwrite Storage using the stored `imageId`.
 4. Keep delete flows honest: if a recipe is deleted, think about whether its image should also be deleted from storage.
 
 ## Demo Project Reference
 
 The recipe demo files live in `demo-projects/recipe-collection/`.
 
-Students should inspect:
+You should inspect:
 
 - `src/types/recipe.ts`
 - `src/app/components/RecipeList.tsx`

@@ -1,14 +1,18 @@
-# Guide: Self-Hosting Appwrite
+# Guide: Self-Hosting Appwrite (Optional)
 
-**Goal**: Run Appwrite locally so your course projects use a backend you control.
+**Goal**: Run Appwrite locally only if you want an optional self-hosted backend instead of the default Appwrite Cloud path.
 
 ## Why This Guide Exists
 
-Appwrite Cloud is fine for getting started, but this course is about beginner full-stack AI engineering. That means students should also know how to:
+Appwrite Cloud is the default path for most people. This guide is only for the optional self-hosted path.
 
-- run their backend locally
+If you are not sure which path to choose, use Appwrite Cloud and skip this guide.
+
+If you do want to self-host, it is useful to know how to:
+
+- run your backend locally
 - inspect infrastructure files
-- control their own database and storage setup
+- control your own database and storage setup
 - use the same local backend across multiple demo apps
 
 This repo already includes a local Appwrite stack in `appwrite/`.
@@ -101,7 +105,7 @@ When Appwrite starts for the first time:
 
 1. Open the console at `http://localhost:8080/console`
 2. Create the root account
-3. Create a project for the course
+3. Create a project for your apps
 4. Copy the project ID
 
 The self-hosted console uses the same project creation and settings screens as Appwrite Cloud.
@@ -165,7 +169,7 @@ This repo already includes a setup script:
 ./setup-appwrite.sh
 ```
 
-That script creates the course databases, collections, and core attributes for the demo apps.
+That script creates the demo app databases, collections, and core attributes.
 
 ## Useful Local Commands
 
@@ -228,7 +232,7 @@ docker compose down -v
 - Appwrite attribute creation is asynchronous
 - Wait a few seconds and recheck the collection attributes
 
-## Recommended Student Workflow
+## Recommended Workflow
 
 For this course, the cleanest workflow is:
 
@@ -238,4 +242,4 @@ For this course, the cleanest workflow is:
 4. Keep app config in `.env.local`
 5. Verify everything in the console after CLI changes
 
-This gives students real backend ownership without forcing them into custom server code on day one.
+This gives you real backend ownership without forcing custom server code on day one.

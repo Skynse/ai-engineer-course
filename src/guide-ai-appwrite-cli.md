@@ -4,14 +4,14 @@
 
 ## Why This Matters
 
-This course teaches AI-assisted full-stack development, not blind prompt-and-pray. Students should learn how to:
+The goal is to use Codex-assisted full-stack development without blind prompt-and-pray. Learn how to:
 
 - describe a product in plain language
 - turn that into a schema plan
 - turn the schema plan into Appwrite CLI commands
 - verify the result before writing app code against it
 
-That is a real beginner AI engineer workflow.
+That is a practical beginner workflow.
 
 ## The Core Rule
 
@@ -32,10 +32,10 @@ Do not use AI as a replacement for:
 
 Before using AI-generated commands, install the CLI on your machine.
 
-If you have Node.js installed, use:
+If you have Bun installed, use:
 
 ```bash
-npm install -g appwrite-cli
+bun add -g appwrite-cli
 ```
 
 Then verify the install:
@@ -59,13 +59,13 @@ If you are using a self-hosted Appwrite server, include the endpoint during logi
 appwrite login --endpoint "http://localhost:8080/v1"
 ```
 
-That interactive flow is valid and useful when you are learning the CLI itself.
+That interactive flow is the baseline Appwrite CLI login flow.
 
 ## Step 0.5: Point The CLI At Your Appwrite Project
 
 The CLI has to know which Appwrite server and project to talk to.
 
-For AI-assisted schema setup in this course, we prefer:
+For Codex-assisted schema setup, prefer:
 
 - `appwrite client` to point the CLI at a specific endpoint and project
 - an Appwrite API key so AI-generated schema commands can run reliably
@@ -76,7 +76,7 @@ Inside the Appwrite project setup flow, the API key work starts from the server 
 
 ![Appwrite server integration screen](/assets/docs/appwrite/integrate-server.png)
 
-For self-hosted Appwrite in this course, the endpoint is usually:
+For the self-hosted Appwrite setup used in this repo, use:
 
 ```text
 http://localhost:8080/v1
@@ -85,7 +85,7 @@ http://localhost:8080/v1
 For Appwrite Cloud, use:
 
 ```text
-https://cloud.appwrite.io/v1
+https://<REGION>.cloud.appwrite.io/v1
 ```
 
 Then configure the CLI with your endpoint, project ID, and API key:
@@ -210,7 +210,7 @@ If AI generated the wrong type, fix it before the frontend is built against the 
 
 ## Example: Social Feed
 
-A reasonable AI-generated plan for this course would be:
+A reasonable AI-generated plan for this app would be:
 
 - database: `social`
 - collection: `posts`
@@ -264,7 +264,7 @@ Requirements:
 - no extra features like follows, notifications, or DMs
 ```
 
-## What Students Should Learn From This
+## What You Should Learn From This
 
 The point is not “AI made the tables for me.”
 
@@ -274,7 +274,7 @@ The point is:
 - CLI makes the draft repeatable
 - verification keeps the app honest
 
-That is the full-stack AI workflow you want students to internalize.
+That is the full-stack AI workflow to internalize.
 
 ## Recommended Pattern For This Course
 
@@ -288,4 +288,4 @@ Use this sequence in every project:
 6. Verify collections and attributes
 7. Only then start coding against the schema
 
-If the app and schema diverge, update the schema or the code immediately. Do not teach students to keep shipping mismatches.
+If the app and schema diverge, update the schema or the code immediately. Do not keep shipping mismatches.

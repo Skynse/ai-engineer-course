@@ -1,364 +1,112 @@
-# Session 5: User Profiles
+# Lesson 5: Imageboard User Profiles
 
 **Duration**: 1.5 hours  
-**Goal**: Create user profiles and manage user data
+**Goal**: Add profile data and teach the difference between account identity and application-specific user records
 
 ## Learning Objectives
 
-By the end of this session, students will:
-- Create a user profile system
-- Update user information
-- Link messages to users
-- Display user-specific content
+By the end of this lesson, you will:
+- explain why auth and profiles are not the same thing
+- design a simple user profile shape
+- connect profile pages to real user data
+- prompt Codex for profile features in narrow slices
+- test read and update flows carefully
 
-## Part 1: Profile System Overview (10 min)
+## Part 1: Concept
 
-### What We're Building
+Authentication proves who the user is.
 
-1. Profile page where users can:
-   - View their info
-   - Update their name
-   - See their message history
-2. Update messages to link to users
-3. Show message authors as clickable profiles
+Profiles describe app-specific information about that user.
 
-## Part 2: Enhanced User Profiles (40 min)
+Examples:
+- display name
+- bio
+- avatar
+- preferences
 
-### Step 1: Update Users Collection
+This matters because many beginner apps accidentally treat the auth account as if it already contains every profile field the UI wants.
 
-Add more fields to the `users` collection:
-- `bio` (string, optional)
-- `avatar` (string, optional - URL to image)
-- `updatedAt` (datetime)
+In this imageboard, the profile data will later be reused beside threads and replies.
 
-### Step 2: Create Profile Page
+## Part 2: Product Goal
 
-Create `src/app/profile/page.tsx`:
+The lesson outcome should be:
 
-```typescript
-'use client';
+- a profile page exists
+- the signed-in user can view their profile data
+- the signed-in user can update selected fields
+- profile information can be reused elsewhere in the app
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '../components/AuthProvider';
-import { databases, DATABASE_ID, USERS_COLLECTION } from '@/lib/appwrite';
-import { useRouter } from 'next/navigation';
-import Navbar from '../components/Navbar';
+## Part 3: Prompting Sequence
 
-export default function Profile() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
+Recommended sequence:
 
-  // Form state
-  const [name, setName] = useState('');
-  const [bio, setBio] = useState('');
+1. ask Codex to propose the minimum profile schema
+2. verify that schema in Appwrite
+3. ask it to build the profile read flow
+4. test loading states and empty states
+5. ask it to add profile updates
+6. test that updates persist
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/auth/signin');
-      return;
-    }
+### Example Prompt
 
-    if (user) {
-      loadProfile();
-    }
-  }, [user, authLoading]);
+I already have auth working.
 
-  async function loadProfile() {
-    try {
-      const doc = await databases.getDocument(
-        DATABASE_ID,
-        USERS_COLLECTION,
-        user!.$id
-      );
-      setProfile(doc);
-      setName(doc.name || '');
-      setBio(doc.bio || '');
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
+Add a beginner-friendly profile system to this app.
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!user) return;
+Requirements:
+- profile page for the current user
+- fields: name, bio, avatar placeholder
+- keep the schema small
+- tell me what Appwrite collection fields need to exist
+- implement the read flow first, then stop
 
-    setSaving(true);
-    setMessage('');
+## Part 4: Copy-Paste Schema Brief
 
-    try {
-      await databases.updateDocument(
-        DATABASE_ID,
-        USERS_COLLECTION,
-        user.$id,
-        {
-          name: name.trim(),
-          bio: bio.trim(),
-          updatedAt: new Date().toISOString()
-        }
-      );
-      setMessage('Profile updated successfully!');
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setMessage('Failed to update profile');
-    } finally {
-      setSaving(false);
-    }
-  }
+```text
+Imageboard profile schema brief:
 
-  if (authLoading || loading) {
-    return <div className="text-center p-8">Loading...</div>;
-  }
+Create one collection called profiles.
 
-  if (!user) return null;
+Fields:
+- userId: string, required
+- handle: string, required, max 30
+- bio: string, optional, max 280
+- avatarFileId: string, optional
+- createdAt: datetime, required
 
-  return (
-    <div>
-      <Navbar />
-      <main className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Your Profile</h1>
-
-        {message && (
-          <div className={`p-4 rounded mb-6 ${message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-            {message}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              value={user.email}
-              disabled
-              className="w-full p-2 border rounded bg-gray-50"
-            />
-            <p className="text-sm text-gray-500 mt-1">Email cannot be changed</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Bio</label>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              className="w-full p-2 border rounded h-24"
-              placeholder="Tell us about yourself..."
-            />
-          </div>
-
-          <div className="text-sm text-gray-500">
-            <p>Member since: {new Date(profile?.createdAt).toLocaleDateString()}</p>
-            {profile?.updatedAt && (
-              <p>Last updated: {new Date(profile.updatedAt).toLocaleDateString()}</p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
-        </form>
-      </main>
-    </div>
-  );
-}
+Rules:
+- one profile per authenticated user
+- keep the schema small
+- this profile data will later appear on threads and replies
 ```
 
-### Step 3: Update Messages to Link to Users
+Then use this follow-up prompt:
 
-Update the `messages` collection:
-1. Add `userId` attribute (string)
-2. Add `userName` attribute (string) - for display
+```text
+Use this profile schema for the imageboard app.
 
-Update `AddMessageForm` to include user info:
+First:
+- tell me what Appwrite fields and indexes I need
 
-```typescript
-// In handleSubmit, update the createDocument call:
-await createMessage(content, user.name, user.$id);
+Then:
+- build the profile read flow
+- stop before update logic
 ```
 
-Update the API route `src/app/api/messages/route.ts`:
+## Part 5: Manual Verification Checklist
 
-```typescript
-// Update POST handler
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { content, author, userId } = body;
+You should verify:
 
-    if (!content?.trim() || !author?.trim()) {
-      return NextResponse.json(
-        { error: 'Content and author are required' },
-        { status: 400 }
-      );
-    }
+1. the profile page loads the correct user data
+2. a signed-out visitor cannot edit another user's profile
+3. profile changes persist after refresh
+4. fields shown in the UI match fields that really exist
+5. the app handles a missing profile document gracefully
 
-    const message = await databases.createDocument(
-      DATABASE_ID,
-      MESSAGES_COLLECTION,
-      ID.unique(),
-      {
-        content: content.trim(),
-        author: author.trim(),
-        userId: userId || null,
-        userName: author.trim(),
-        createdAt: new Date().toISOString()
-      }
-    );
+This lesson reinforces:
 
-    return NextResponse.json({ message }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating message:', error);
-    return NextResponse.json(
-      { error: 'Failed to create message' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-## Part 3: User Message History (30 min)
-
-### Create API Route for User Messages
-
-Create `src/app/api/messages/user/[userId]/route.ts`:
-
-```typescript
-import { NextResponse } from 'next/server';
-import { databases, DATABASE_ID, MESSAGES_COLLECTION } from '@/lib/appwrite';
-import { Query } from 'appwrite';
-
-export async function GET(
-  request: Request,
-  { params }: { params: { userId: string } }
-) {
-  try {
-    const messages = await databases.listDocuments(
-      DATABASE_ID,
-      MESSAGES_COLLECTION,
-      [Query.equal('userId', params.userId), Query.orderDesc('$createdAt')]
-    );
-
-    return NextResponse.json({ messages: messages.documents });
-  } catch (error) {
-    console.error('Error fetching user messages:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch messages' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-### Add Message History to Profile
-
-Add to `src/app/profile/page.tsx`:
-
-```typescript
-// Add to imports
-import { useEffect, useState } from 'react';
-
-// Add to state
-const [userMessages, setUserMessages] = useState<any[]>([]);
-
-// Add to loadProfile function
-async function loadProfile() {
-  // ... existing code ...
-  
-  // Load user's messages
-  try {
-    const response = await fetch(`/api/messages/user/${user.$id}`);
-    if (response.ok) {
-      const data = await response.json();
-      setUserMessages(data.messages);
-    }
-  } catch (error) {
-    console.error('Error loading messages:', error);
-  }
-}
-
-// Add to JSX after the form
-<div className="mt-8">
-  <h2 className="text-2xl font-bold mb-4">Your Messages</h2>
-  {userMessages.length === 0 ? (
-    <p className="text-gray-500">You haven't posted any messages yet.</p>
-  ) : (
-    <ul className="space-y-4">
-      {userMessages.map((msg) => (
-        <li key={msg.$id} className="p-4 bg-gray-50 rounded">
-          <p>{msg.content}</p>
-          <p className="text-sm text-gray-500">
-            {new Date(msg.createdAt).toLocaleDateString()}
-          </p>
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-```
-
-## Part 4: Update UI to Show User Links (10 min)
-
-### Update MessageList to Show User Profiles
-
-Modify the message display in `MessageList.tsx`:
-
-```typescript
-<li key={msg.$id} className="p-4 bg-white shadow rounded-lg">
-  <p className="text-lg">{msg.content}</p>
-  <div className="mt-2 text-sm text-gray-500 flex justify-between">
-    <div>
-      {msg.userId ? (
-        <Link 
-          href={`/user/${msg.userId}`}
-          className="text-blue-500 hover:underline"
-        >
-          {msg.userName}
-        </Link>
-      ) : (
-        <span>{msg.author}</span>
-      )}
-      <span className="mx-2">•</span>
-      <span>{new Date(msg.createdAt).toLocaleDateString()}</span>
-    </div>
-    <!-- ... edit/delete buttons ... -->
-  </div>
-</li>
-```
-
-## Key Concepts
-
-1. **User documents sync**: Keep Appwrite Auth and your database in sync
-2. **Denormalization**: Store `userName` in messages for quick display
-3. **Protected routes**: Check auth before loading profile pages
-4. **Relations**: Link messages to users with `userId`
-
-## Homework
-
-1. Create a public user profile page (`/user/[id]`)
-2. Add a "Messages by this user" section to public profiles
-3. Add profile avatar upload (prepare for next session)
-4. Show message count in navbar
-
----
-
-**Next Session**: Building a blog with comments - our first complex relationship!
+- user identity vs profile data
+- data ownership
+- why the app needs a stable source of truth
+- why it is important to inspect the real backend before trusting generated field names

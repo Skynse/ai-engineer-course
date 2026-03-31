@@ -2,25 +2,27 @@
 
 ## What's Included
 
-This package contains everything you need to run the AI Engineer (Full Stack) course.
+This package contains everything needed to run the AI Engineer (Full Stack) course with a Codex-first workflow.
 
-### 📚 Course Materials (mdbook)
+### 📚 Course Materials (Astro course site)
 
-**Location**: `book/` folder or view online  
+**Location**: `src/` for lesson content and `course-site/` for the Astro preview site  
 **Format**: HTML website with search
 
 Contains:
 - Course overview and prerequisites
-- 16 detailed session plans
-- Complete code examples
+- 16 detailed lesson plans
+- A dedicated Codex website workflow guide
+- A dedicated Appwrite MCP setup guide
+- Complete code examples where they are intentionally still provided
 - Step-by-step instructions
 - Homework assignments
 - Troubleshooting guides
 
-**Sessions**:
-1. Introduction & Setup
-2. Basic CRUD Operations
-3. Next.js Integration & API Routes
+**Lessons**:
+1. Full-Stack Foundations & Course Setup
+2. Next.js Introduction & First TODO App
+3. CRUD, API Routes, and the First Appwrite Build Loop
 4. Simple Authentication
 5. User Profiles
 6. Building a Blog - Relationships 101
@@ -67,7 +69,7 @@ Three working demo applications:
   - Next.js project structure
   - Appwrite SDK installed
   - Directory setup
-  - Ready for students to build following Session 12
+  - Ready to build following Lesson 12
 
 #### 🔄 Social Feed (`social-feed.zip`) - **STRUCTURE**
 - **Size**: 72KB
@@ -77,7 +79,7 @@ Three working demo applications:
   - Next.js project structure
   - Appwrite SDK installed
   - Directory setup
-  - Ready for students to build following Session 13
+  - Ready to build following Lesson 13
 
 ## Quick Start Guide
 
@@ -85,10 +87,10 @@ Three working demo applications:
 
 1. **Review the course**:
    ```bash
-   # Open the book
-   cd book
-   start index.html  # Windows
-   open index.html   # Mac
+   # Run the Astro preview
+   cd course-site
+   bun install
+   bun run dev
    ```
 
 2. **Test Task Manager**:
@@ -100,41 +102,40 @@ Three working demo applications:
    ```
 
 3. **Prepare for class**:
-   - Review session plans
+   - Review lesson plans
+   - Review the Codex workflow guide
+   - Review the Appwrite MCP guide
    - Set up demo projects
    - Test with Appwrite
 
-### For Students
+### For Learners
 
 1. **Read the course**:
    - Start with README.md
-   - Go through sessions 1-16
+   - Install Codex first
+   - Read the Codex workflow guide
+   - Read the Appwrite MCP guide
+   - Go through Lessons 1-16
 
 2. **Build the projects**:
    - Start with Task Manager (complete reference)
-   - Build Recipe Collection (Session 12)
-   - Build Social Feed (Session 13)
+   - Build Recipe Collection (Lesson 12)
+   - Build Social Feed (Lesson 13)
 
 3. **Create final project**:
-   - Follow Session 15 planning
-   - Build in Session 16 and after
+   - Follow Lesson 15 planning
+   - Build in Lesson 16 and after
 
 ## Course Structure
 
 ```
 ai-engineer-course/
-├── book/                      # Generated HTML website
-│   ├── index.html            # Start here
-│   ├── session-01.html       # All 16 sessions
-│   ├── ...
-│   └── session-16.html
-├── book.toml                 # mdbook configuration
-├── custom.css                # Styling
 ├── src/                      # Source markdown files
 │   ├── README.md
 │   ├── session-01.md
 │   ├── ...
 │   └── session-16.md
+├── course-site/              # Astro site for preview/build
 └── demo-projects/            # Working code
     ├── task-manager.zip      # ✅ Complete
     ├── recipe-collection.zip # 🔄 Structure
@@ -147,59 +148,59 @@ ai-engineer-course/
 ### Using Task Manager
 
 **Option 1**: Use as complete reference
-- Students study the code
+- Study the code
 - Learn patterns and best practices
 - Use as starting point for modifications
 
 **Option 2**: Build together in class
-- Code along with students
+- Code along together
 - Explain each part
 - Answer questions live
 
-**Option 3**: Students build independently
+**Option 3**: Build independently
 - Provide Task Manager as reference
-- Students build from scratch
+- Build from scratch
 - Compare their solution to reference
 
 ### Building Other Demos
 
-Recipe Collection and Social Feed are designed to be built by students following the course sessions. This provides:
+Recipe Collection and Social Feed are designed to be built by following the course sessions. This provides:
 - Hands-on practice
 - Real coding experience
 - Problem-solving opportunities
 - Portfolio projects
 
-### Session Flow
+### Lesson Flow
 
-**Week 1-2**: Foundation (Sessions 1-5)
+**Week 1-2**: Foundation (Lessons 1-5)
 - Set up environment
 - Learn basics
-- Build Guestbook
+- Start the imageboard app
 
-**Week 3-4**: Features (Sessions 6-10)
-- Blog with comments
+**Week 3-4**: Features (Lessons 6-10)
+- Continue the imageboard app
 - File uploads
 - Security
 - Search
 
-**Week 5**: Demo Apps (Sessions 11-13)
+**Week 5**: Demo Apps (Lessons 11-13)
 - Task Manager (reference)
 - Recipe Collection (build)
 - Social Feed (build)
 
-**Week 6**: Polish & Projects (Sessions 14-16)
+**Week 6**: Polish & Projects (Lessons 14-16)
 - Styling
 - Planning
 - Building
 
 **Week 7-8**: Final Projects
-- Students work independently
+- Work independently
 - Instructor support
 - Presentations
 
 ## Technical Requirements
 
-### For Students
+### For Learners
 
 - **Node.js**: 18+ installed
 - **Code Editor**: VS Code recommended
@@ -209,8 +210,8 @@ Recipe Collection and Social Feed are designed to be built by students following
 
 ### For Instructors
 
-- All student requirements, plus:
-- **mdbook**: For editing course materials
+- All learner requirements, plus:
+- **Bun**: For running the Astro preview site
 - **Zip tool**: For distributing projects
 
 ## Customization
@@ -218,14 +219,14 @@ Recipe Collection and Social Feed are designed to be built by students following
 ### Modifying Course Content
 
 1. Edit markdown files in `src/`
-2. Run `mdbook build` to regenerate HTML
-3. Distribute updated `book/` folder
+2. Run the Astro preview or build from `course-site/`
+3. Publish the updated site output
 
-### Adding Sessions
+### Adding Lessons
 
 1. Create `session-XX.md` in `src/`
 2. Add to `src/SUMMARY.md`
-3. Rebuild with `mdbook build`
+3. Rebuild the Astro site
 
 ### Updating Demo Projects
 
@@ -249,11 +250,11 @@ Recipe Collection and Social Feed are designed to be built by students following
 
 ### Getting Help
 
-1. Check session notes
+1. Check lesson notes
 2. Review demo project code
 3. Search documentation
 4. Ask in course forum
-5. Use AI assistants
+5. Use Codex as the primary build/debug assistant
 
 ## License
 
@@ -267,4 +268,4 @@ MIT License - Free to use for teaching and learning!
 
 ---
 
-**Ready to teach the next generation of AI-assisted full-stack developers! 🚀**
+**Ready to teach the next generation of Codex-first full-stack developers! 🚀**
