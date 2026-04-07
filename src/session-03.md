@@ -97,9 +97,7 @@ Fields:
 - authorName: string, required, max 60
 - createdAt: datetime, required
 
-This first lesson is text-only.
 Do not add images, replies, profiles, or boards yet.
-Keep it beginner-friendly.
 ```
 
 Then use a follow-up prompt like:
