@@ -92,11 +92,14 @@ def render_mermaid(spec: dict[str, Any]) -> str:
 
 
 def find_mmdc() -> str | None:
-    candidates = [
-        shutil.which("mmdc"),
-        str(ROOT / "course-site" / "node_modules" / ".bin" / "mmdc"),
-        str(ROOT / "course-site" / "node_modules" / ".bin" / "mmdc.cmd"),
+    local_candidates = [
+        ROOT / "course-site" / "node_modules" / ".bin" / "mmdc",
+        ROOT / "course-site" / "node_modules" / ".bin" / "mmdc.cmd",
     ]
+    if sys.platform.startswith("win"):
+        local_candidates.reverse()
+
+    candidates = [shutil.which("mmdc"), *(str(candidate) for candidate in local_candidates)]
     for candidate in candidates:
         if candidate and Path(candidate).exists():
             return candidate

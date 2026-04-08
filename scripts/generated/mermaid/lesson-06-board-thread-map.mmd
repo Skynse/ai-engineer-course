@@ -1,0 +1,32 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'basis'}, 'themeVariables': {'fontFamily': 'Inter, ui-sans-serif, system-ui', 'primaryTextColor': '#182033', 'lineColor': '#314056', 'tertiaryColor': '#fffdfa'}}}%%
+flowchart TB
+%% How Boards, Threads, and Authors Connect
+%% One board can contain many threads, and each thread has one author
+classDef defaultNode fill:#fffdfa,stroke:#243042,stroke-width:2px,color:#182033;
+classDef accent fill:#dff3f7,stroke:#126e82,stroke-width:2px,color:#182033;
+classDef rowGroup fill:transparent,stroke:transparent,color:transparent;
+subgraph row_0[" "]
+direction LR
+board["Board<br/>/cats"]:::accent
+end
+class row_0 rowGroup;
+subgraph row_1[" "]
+direction LR
+thread_a["Thread A"]:::defaultNode
+thread_b["Thread B"]:::defaultNode
+thread_c["Thread C"]:::defaultNode
+end
+class row_1 rowGroup;
+subgraph row_2[" "]
+direction LR
+author_a["Author<br/>user_123"]:::defaultNode
+author_b["Author<br/>user_456"]:::defaultNode
+author_c["Author<br/>user_789"]:::defaultNode
+end
+class row_2 rowGroup;
+board -->|contains| thread_a
+board -->|contains| thread_b
+board -->|contains| thread_c
+thread_a -->|written by| author_a
+thread_b -->|written by| author_b
+thread_c -->|written by| author_c

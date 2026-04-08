@@ -25,7 +25,7 @@ Contains:
 3. CRUD, API Routes, and the First Appwrite Build Loop
 4. Simple Authentication
 5. User Profiles
-6. Building a Blog - Relationships 101
+6. Imageboard Relationship Thinking
 7. Comments System
 8. File Uploads
 9. Permissions & Security Basics

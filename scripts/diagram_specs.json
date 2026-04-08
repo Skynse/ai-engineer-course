@@ -67,6 +67,50 @@
         { "from": "build", "to": "test", "label": "run" },
         { "from": "test", "to": "iterate", "label": "check" }
       ]
+    },
+    {
+      "slug": "lesson-06-board-thread-map",
+      "title": "How Boards, Threads, and Authors Connect",
+      "subtitle": "One board can contain many threads, and each thread has one author",
+      "nodes": [
+        { "id": "board", "label": "Board\n/cats", "col": 1, "row": 0, "tone": "accent" },
+        { "id": "thread_a", "label": "Thread A", "col": 0, "row": 1 },
+        { "id": "thread_b", "label": "Thread B", "col": 1, "row": 1 },
+        { "id": "thread_c", "label": "Thread C", "col": 2, "row": 1 },
+        { "id": "author_a", "label": "Author\nuser_123", "col": 0, "row": 2 },
+        { "id": "author_b", "label": "Author\nuser_456", "col": 1, "row": 2 },
+        { "id": "author_c", "label": "Author\nuser_789", "col": 2, "row": 2 }
+      ],
+      "edges": [
+        { "from": "board", "to": "thread_a", "label": "contains" },
+        { "from": "board", "to": "thread_b", "label": "contains" },
+        { "from": "board", "to": "thread_c", "label": "contains" },
+        { "from": "thread_a", "to": "author_a", "label": "written by" },
+        { "from": "thread_b", "to": "author_b", "label": "written by" },
+        { "from": "thread_c", "to": "author_c", "label": "written by" }
+      ]
+    },
+    {
+      "slug": "lesson-06-denormalized-display-fields",
+      "title": "How Thread Fields Help the App",
+      "subtitle": "Some fields link records, and some fields help the page show readable text",
+      "nodes": [
+        { "id": "thread", "label": "Thread document", "col": 1, "row": 0, "tone": "accent" },
+        { "id": "board_slug", "label": "boardSlug\nhelps the board page find this thread", "col": 0, "row": 1 },
+        { "id": "author_id", "label": "authorId\npoints to the real user record", "col": 1, "row": 1 },
+        { "id": "author_handle", "label": "authorHandle\nshows a readable name", "col": 2, "row": 1 },
+        { "id": "board_page", "label": "Board page\nloads matching threads", "col": 0, "row": 2 },
+        { "id": "profile_truth", "label": "User record\nwho owns the thread", "col": 1, "row": 2 },
+        { "id": "thread_card", "label": "Thread card\nshows the author's name", "col": 2, "row": 2 }
+      ],
+      "edges": [
+        { "from": "thread", "to": "board_slug", "label": "stores" },
+        { "from": "thread", "to": "author_id", "label": "stores" },
+        { "from": "thread", "to": "author_handle", "label": "stores" },
+        { "from": "board_slug", "to": "board_page", "label": "helps load" },
+        { "from": "author_id", "to": "profile_truth", "label": "links to" },
+        { "from": "author_handle", "to": "thread_card", "label": "shows on page" }
+      ]
     }
   ]
 }

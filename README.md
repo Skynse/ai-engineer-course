@@ -72,7 +72,7 @@ Next.js project scaffolded for you to build following Lesson 13.
 | 3 | Imageboard Threads, CRUD, and the First Appwrite Build Loop | Text-only imageboard threads |
 | 4 | Imageboard Authentication | Signed-in posting flow |
 | 5 | Imageboard User Profiles | Profile system |
-| 6 | Imageboard Boards and Thread Relationships | Boards + threads |
+| 6 | Imageboard Relationship Thinking | Text-first relationship map + schema review |
 | 7 | Imageboard Replies | Thread replies |
 | 8 | Imageboard Uploads | Thread image uploads |
 | 9 | Imageboard Permissions & Security Basics | Safer posting permissions |

@@ -1,0 +1,32 @@
+%%{init: {'theme': 'base', 'flowchart': {'curve': 'basis'}, 'themeVariables': {'fontFamily': 'Inter, ui-sans-serif, system-ui', 'primaryTextColor': '#182033', 'lineColor': '#314056', 'tertiaryColor': '#fffdfa'}}}%%
+flowchart TB
+%% How Thread Fields Help the App
+%% Some fields link records, and some fields help the page show readable text
+classDef defaultNode fill:#fffdfa,stroke:#243042,stroke-width:2px,color:#182033;
+classDef accent fill:#dff3f7,stroke:#126e82,stroke-width:2px,color:#182033;
+classDef rowGroup fill:transparent,stroke:transparent,color:transparent;
+subgraph row_0[" "]
+direction LR
+thread["Thread document"]:::accent
+end
+class row_0 rowGroup;
+subgraph row_1[" "]
+direction LR
+board_slug["boardSlug<br/>helps the board page find this thread"]:::defaultNode
+author_id["authorId<br/>points to the real user record"]:::defaultNode
+author_handle["authorHandle<br/>shows a readable name"]:::defaultNode
+end
+class row_1 rowGroup;
+subgraph row_2[" "]
+direction LR
+board_page["Board page<br/>loads matching threads"]:::defaultNode
+profile_truth["User record<br/>who owns the thread"]:::defaultNode
+thread_card["Thread card<br/>shows the author's name"]:::defaultNode
+end
+class row_2 rowGroup;
+thread -->|stores| board_slug
+thread -->|stores| author_id
+thread -->|stores| author_handle
+board_slug -->|helps load| board_page
+author_id -->|links to| profile_truth
+author_handle -->|shows on page| thread_card
