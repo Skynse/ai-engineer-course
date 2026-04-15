@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/austi.DESKTOP-QRQEJQ5/projects/ai-engineer-course/src/**)",
+      "Bash(cp session-14.md session-12.md)",
+      "Bash(cp session-15.md session-13.md)",
+      "Bash(cp session-16.md session-14-new.md)",
+      "Bash(rm session-14.md session-15.md session-16.md)",
+      "Bash(mv session-14-new.md session-14.md)",
+      "WebFetch(domain:www.designprompts.dev)"
+    ]
+  }
+}

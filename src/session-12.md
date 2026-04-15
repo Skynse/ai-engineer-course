@@ -1,138 +1,32 @@
-# Lesson 12: Recipe Collection Demo
+# Lesson 12: Styling & Polish
 
-**Duration**: 1.5 hours  
-**Goal**: Build a recipe app with storage-backed images and richer document fields
+**Duration**: 30 minutes  
+**Goal**: Make your app look good using Codex and a design prompt
 
-## What We're Building
+## The Tool
 
-A recipe collection app with:
+Go to [designprompts.dev](https://www.designprompts.dev). It's a library of design prompts you can give directly to Codex to style your app. Browse the styles, pick one that fits your project, and copy the prompt.
 
-- image uploads via Appwrite Storage
-- structured recipe documents instead of flat text records
-- array fields for `ingredients` and `instructions`
-- category, cooking time, and servings metadata
-- edit and delete flows
+## How To Use It
 
-## Why This Lesson Matters
+1. Open your app in Codex
+2. Pick a style from designprompts.dev
+3. Paste the prompt into Codex and let it apply the design
+4. Review what changed and ask Codex to adjust anything that doesn't look right
 
-This lesson moves from simple records to shaped content.
+That's it. You don't need to write Tailwind by hand — the prompt handles it.
 
-A recipe is a better teaching example than a simple thread post because it forces you to model:
+## What To Check After
 
-- text fields
-- number fields
-- array fields
-- optional file references
-- ownership fields
+Once Codex applies the style, verify:
 
-That is much closer to the kinds of documents real apps store.
+- [ ] The app looks consistent across all pages
+- [ ] It works on mobile (resize your browser)
+- [ ] Buttons, forms, and cards all feel cohesive
+- [ ] Loading and empty states don't look broken
 
-## Database Schema
-
-**recipes collection:**
-
-- `title` (string, required)
-- `description` (string, optional)
-- `ingredients` (string array)
-- `instructions` (string array)
-- `cookingTime` (integer)
-- `servings` (integer)
-- `category` (enum or string with fixed values)
-- `imageId` (string, optional)
-- `userId` (string, required)
-- `userName` (string, required)
-
-**storage bucket:**
-
-- `recipe-images`
-
-## Key Concepts
-
-### 1. Store File References, Not Files, In Documents
-
-Recipe documents should store:
-
-```typescript
-imageId: uploadedFile.$id
-```
-
-The binary file lives in Appwrite Storage. The document only keeps the reference.
-
-### 2. Arrays Are First-Class Appwrite Fields
-
-This is the first demo where one text box per concept stops being a good model.
-
-Good examples:
-
-- `ingredients: string[]`
-- `instructions: string[]`
-
-That makes the UI, validation, and rendering much cleaner than one giant textarea.
-
-### 3. Image Upload Flow
-
-The core pattern is:
-
-1. user selects an image
-2. upload file to Storage
-3. save returned file id into the recipe document
-4. render the image from the file id later
-
-Conceptually:
-
-```typescript
-const uploadedFile = await storage.createFile(BUCKET_ID, ID.unique(), imageFile);
-
-await databases.createDocument(DATABASE_ID, RECIPES_COLLECTION_ID, ID.unique(), {
-  ...recipeData,
-  imageId: uploadedFile.$id,
-});
-```
-
-### 4. Edit Flows Need To Respect Existing Images
-
-When you edit a recipe, understand the difference between:
-
-- keeping the current image
-- replacing the current image
-- removing the image entirely
-
-That is a common source of beginner bugs.
-
-## Component Structure
-
-The recipe demo is organized around item and list rendering:
-
-```text
-components/
-├── RecipeList.tsx
-├── RecipeItem.tsx
-└── Navbar.tsx
-```
-
-## Implementation Notes
-
-1. Validate that you always keep at least one ingredient and one instruction.
-2. Make category options explicit rather than letting AI invent inconsistent category names.
-3. Generate image URLs from Appwrite Storage using the stored `imageId`.
-4. Keep delete flows honest: if a recipe is deleted, think about whether its image should also be deleted from storage.
-
-## Demo Project Reference
-
-The recipe demo files live in `demo-projects/recipe-collection/`.
-
-You should inspect:
-
-- `src/types/recipe.ts`
-- `src/app/components/RecipeList.tsx`
-- `src/app/components/RecipeItem.tsx`
-
-## Homework
-
-1. Add search by title or category.
-2. Add a dedicated recipe form instead of editing only inside the card.
-3. Ask AI to design a schema for ratings and reviews, then explain whether it should be embedded or moved to a separate collection.
+If something looks off, describe it to Codex and ask for a fix.
 
 ---
 
-**Next**: Social Feed (comments, likes, images, and deletion flows)
+**Next**: Final Project Planning

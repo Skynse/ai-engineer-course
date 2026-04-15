@@ -1,304 +1,43 @@
-# Lesson 15: Final Project Planning
-
-**Duration**: 1.5 hours  
-**Goal**: Turn a project idea into a spec and AI-ready build plan
-
-## Overview
-
-You will work on a custom full-stack application for the next 2-3 weeks. Today is about turning an idea into a scoped product brief, schema plan, page map, and a sequence of prompts that can actually drive implementation.
-
-## Project Options
-
-Choose one or propose your own:
-
-### Option 1: Book Tracker
-A Goodreads-style app for tracking books
-
-**Features:**
-- User authentication
-- Add books (title, author, cover image, description)
-- Reading status (Want to Read, Reading, Read)
-- Rate and review books
-- View reading history
-- Search/filter books
-
-**Collections:**
-- `books` - book information
-- `userBooks` - user's books with status and rating
-
-### Option 2: Event Planner
-An app for creating and managing events
-
-**Features:**
-- User authentication
-- Create events (title, date, location, description, image)
-- RSVP system (Going, Maybe, Not Going)
-- Event discovery/search
-- View attendees
-- Event categories
-
-**Collections:**
-- `events` - event details
-- `rsvps` - user RSVPs
-- `categories` - event types
-
-### Option 3: Study Notes
-A note-taking app
-
-**Features:**
-- User authentication
-- Create subjects/courses
-- Add notes with rich text
-- Organize with tags
-- Search notes
-- Share notes with classmates
-- Study mode (flashcards)
-
-**Collections:**
-- `subjects` - courses/subjects
-- `notes` - individual notes
-- `tags` - organization tags
-
-### Option 4: Your Own Idea
-Propose a custom project! Must include:
-- User authentication
-- At least 2 related collections
-- File upload feature (images)
-- Search or filter functionality
-
-## Planning Template
-
-### 1. Project Name
-Give your project a catchy name!
-
-### 2. Problem Statement
-What problem does your app solve? (2-3 sentences)
-
-### 2.5 Build Prompt
-Write the prompt you will give Codex to scaffold the project.
-
-Include:
-- app concept
-- target user
-- core features
-- stack constraints
-- what not to build yet
-
-### 3. User Stories
-Write 3-5 user stories:
-- As a [type of user], I want [goal] so that [benefit]
-
-Example:
-- As a book lover, I want to track books I've read so that I can remember my favorites
-- As a user, I want to organize my notes by subject so that I can study efficiently
-
-### 4. Features List
-List all features (must-haves and nice-to-haves):
-
-**Must-Haves (MVP):**
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-
-**Nice-to-Haves:**
-- [ ] Advanced feature 1
-- [ ] Advanced feature 2
-
-### 5. Database Design
-Draw your collections and relationships:
-
-```
-collection1:
-  - field1 (type)
-  - field2 (type)
-  - relationTo: collection2
-
-collection2:
-  - field1 (type)
-  - field2 (type)
-  - relationTo: collection1
-```
-
-### 6. Page Structure
-List all pages in your app:
-
-- `/` - Home/Landing
-- `/auth/signin` - Login
-- `/auth/signup` - Register
-- `/dashboard` - User dashboard
-- ... (add your pages)
-
-### 7. API Endpoints
-List your API routes:
-
-- `GET /api/resource` - List all
-- `POST /api/resource` - Create
-- `GET /api/resource/:id` - Get one
-- `PATCH /api/resource/:id` - Update
-- `DELETE /api/resource/:id` - Delete
-
-### 8. Component List
-List reusable components you'll build:
-
-- Navbar
-- Footer
-- Card
-- Form inputs
-- ... (your components)
-
-### 9. Wireframes
-Sketch rough layouts for key pages (can be on paper):
-
-- Home page
-- Main feature page
-- Detail page
-- Form page
-
-### 10. Timeline
-Plan your 2-3 weeks:
-
-**Week 1:**
-- Day 1-2: Setup project and database
-- Day 3-4: Build authentication
-- Day 5-7: Core CRUD features
-
-**Week 2:**
-- Day 1-3: Main features and UI
-- Day 4-5: Additional features
-- Day 6-7: Testing and bug fixes
-
-**Week 3 (if needed):**
-- Polish and extra features
-- Deployment
-- Presentation prep
-
-## Today's Activity (90 min)
-
-### Phase 1: Choose and Research (20 min)
-- Select your project idea
-- Research similar apps for inspiration
-- Define the core problem you're solving
-
-### Phase 2: Planning (40 min)
-Fill out the planning template above
-
-### Phase 3: Database Design (20 min)
-- Ask Codex for a schema plan first
-- Review the plan and simplify it
-- Create collections in Appwrite console or via CLI
-- Test with sample data
-
-### Phase 4: Initial Setup (10 min)
-- Create Next.js project
-- Install dependencies
-- Ask it to scaffold the initial folder structure and first pages
-
-## Requirements Checklist
-
-Your final project must have:
-
-- [ ] **Authentication**
-  - Sign up / Sign in
-  - Protected routes
-  - User profiles
-
-- [ ] **Database**
-  - At least 2 related collections
-  - Proper relationships
-  - Appropriate permissions
-
-- [ ] **File Upload**
-  - Image upload using Appwrite Storage
-  - Display uploaded images
-
-- [ ] **CRUD Operations**
-  - Create, Read, Update, Delete
-  - Working API routes
-  - Functional UI
-
-- [ ] **Search/Filter**
-  - Search functionality OR
-  - Filter by categories/status
-
-- [ ] **UI/UX**
-  - Responsive design
-  - Loading states
-  - Error handling
-  - Professional styling
-
-- [ ] **Deployment**
-  - Deployed to Vercel
-  - Working Appwrite backend
-  - Publicly accessible URL
-
-## Presentation Guidelines
-
-Prepare a 5-10 minute presentation covering:
-
-1. **Demo** (3-5 min)
-   - Walk through main features
-   - Show it working end-to-end
-
-2. **Technical Overview** (2-3 min)
-   - Tech stack used
-   - Database design
-   - Architecture decisions
-   - How you used your AI tools to move the project forward
-
-3. **Challenges & Learnings** (1-2 min)
-   - What was difficult?
-   - What did you learn?
-   - What would you do differently?
-
-4. **Q&A** (2-3 min)
-   - Answer questions from peers
-
-## Resources
-
-- **Appwrite Docs**: appwrite.io/docs
-- **Next.js Docs**: nextjs.org/docs
-- **Tailwind Docs**: tailwindcss.com/docs
-- **Course Materials**: Link to lesson notes
-
-## Questions to Ask Before Starting
-
-1. Is my scope realistic for 2-3 weeks?
-2. Do I understand the database relationships?
-3. Can I describe the MVP clearly enough for Codex to scaffold it?
-4. Have I planned the API endpoints?
-5. Do I have a clear idea of the UI?
-6. What are the biggest technical risks?
-
-## AI-Assisted Build Sequence
-
-Leave Lesson 15 with prompts ready for the first build day.
-
-Recommended sequence:
-
-1. Ask Codex to review the project brief and identify missing requirements
-2. Ask it for a file and route plan
-3. Ask it for an Appwrite schema plan
-4. Verify the plan before creating collections
-5. Ask it to scaffold the shell of the app
-6. Implement one vertical slice at a time
-
-## Getting Help
-
-During the project period, you can:
-- Review lesson notes
-- Ask Codex for help with implementation, debugging, and refactors
-- Post in course forum/chat
-- Schedule office hours with instructor
-- Collaborate with classmates (but code your own project)
-
-## Submission Requirements
-
-Submit by the deadline:
-- [ ] GitHub repository link
-- [ ] Deployed app URL
-- [ ] 5-10 minute presentation video OR
-- [ ] Live demo session attendance
+# Lesson 15: Deploying to Vercel
+
+**Duration**: 20 minutes  
+**Goal**: Get your app live on a public URL
+
+## What You Need
+
+- A GitHub account with your project pushed to a repo
+- A Vercel account (free tier is fine)
+
+## Steps
+
+### 1. Push your project to GitHub
+
+If it's not already there, create a repo and push your code.
+
+### 2. Import the project in Vercel
+
+Go to [vercel.com](https://vercel.com), click **Add New Project**, and import your GitHub repo. Vercel will detect that it's a Next.js app automatically.
+
+### 3. Add your environment variables
+
+Before deploying, add the same variables from your `.env.local` file into Vercel's environment variable settings. At minimum:
+
+- `NEXT_PUBLIC_APPWRITE_ENDPOINT`
+- `NEXT_PUBLIC_APPWRITE_PROJECT_ID`
+- any database or bucket IDs your app uses
+
+### 4. Deploy
+
+Click **Deploy**. Vercel builds and hosts your app. You'll get a public URL when it's done.
+
+### 5. Add your Vercel URL to Appwrite
+
+In your Appwrite project settings, add your Vercel URL as an allowed platform/hostname so requests aren't blocked.
+
+## Redeployments
+
+Every time you push to your main branch, Vercel redeploys automatically. You don't have to do anything else.
 
 ---
 
-**Next Lesson**: Final project building and Q&A!
+**Next**: Final Project Planning

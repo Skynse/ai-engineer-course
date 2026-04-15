@@ -177,9 +177,7 @@ const courseSource: { title: string; subtitle: string; modules: ModuleSource[] }
       image: withBase('/assets/screenshots/kanban/kanban.png'),
       lessons: [
         { slug: 'session-11', source: 'session-11.md', number: '3.1', image: withBase('/assets/screenshots/kanban/kanban.png') },
-        { slug: 'session-12', source: 'session-12.md', number: '3.2', image: withBase('/assets/screenshots/recipe/rice.png') },
-        { slug: 'session-13', source: 'session-13.md', number: '3.3', image: withBase('/assets/screenshots/social/social2.png') },
-        { slug: 'session-14', source: 'session-14.md', number: '3.4' },
+        { slug: 'session-12', source: 'session-12.md', number: '3.2' },
       ],
     },
     {
@@ -189,8 +187,9 @@ const courseSource: { title: string; subtitle: string; modules: ModuleSource[] }
       description: 'Planning, building, and presenting a complete static or full-stack project using the same systems taught throughout the course.',
       image: withBase('/assets/screenshots/social/social3.png'),
       lessons: [
-        { slug: 'session-15', source: 'session-15.md', number: '4.1' },
-        { slug: 'session-16', source: 'session-16.md', number: '4.2' },
+        { slug: 'session-13', source: 'session-13.md', number: '4.1' },
+        { slug: 'session-14', source: 'session-14.md', number: '4.2' },
+        { slug: 'session-15', source: 'session-15.md', number: '4.3' },
       ],
     },
   ],
