@@ -29,4 +29,4 @@ If something looks off, describe it to Codex and ask for a fix.
 
 ---
 
-**Next**: Final Project Planning
+**Next**: Demo Projects

@@ -1,43 +1,45 @@
-# Lesson 15: Deploying to Vercel
+# Lesson 15: Share Your Website
 
 **Duration**: 20 minutes  
 **Goal**: Get your app live on a public URL
 
 ## What You Need
 
-- A GitHub account with your project pushed to a repo
 - A Vercel account (free tier is fine)
+- Your project ready to deploy
 
-## Steps
+## Method 1: Vercel Dashboard (via GitHub)
 
-### 1. Push your project to GitHub
+1. Push your project to a GitHub repo
+2. Go to [vercel.com](https://vercel.com), click **Add New Project**, and import the repo
+3. Add your environment variables before deploying — the same ones from your `.env.local`:
+   - `NEXT_PUBLIC_APPWRITE_ENDPOINT`
+   - `NEXT_PUBLIC_APPWRITE_PROJECT_ID`
+   - any database or bucket IDs your app uses
+4. Click **Deploy**
 
-If it's not already there, create a repo and push your code.
+Every time you push to your main branch after this, Vercel redeploys automatically.
 
-### 2. Import the project in Vercel
+## Method 2: Vercel CLI
 
-Go to [vercel.com](https://vercel.com), click **Add New Project**, and import your GitHub repo. Vercel will detect that it's a Next.js app automatically.
+Install the CLI and deploy directly from your terminal:
 
-### 3. Add your environment variables
+```bash
+npm i -g vercel
+vercel login
+vercel deploy --prod
+```
 
-Before deploying, add the same variables from your `.env.local` file into Vercel's environment variable settings. At minimum:
+Vercel will walk you through the setup on first run. Your environment variables can be added via the dashboard or with:
 
-- `NEXT_PUBLIC_APPWRITE_ENDPOINT`
-- `NEXT_PUBLIC_APPWRITE_PROJECT_ID`
-- any database or bucket IDs your app uses
+```bash
+vercel env add NEXT_PUBLIC_APPWRITE_PROJECT_ID
+```
 
-### 4. Deploy
+## After Deploying (Both Methods)
 
-Click **Deploy**. Vercel builds and hosts your app. You'll get a public URL when it's done.
-
-### 5. Add your Vercel URL to Appwrite
-
-In your Appwrite project settings, add your Vercel URL as an allowed platform/hostname so requests aren't blocked.
-
-## Redeployments
-
-Every time you push to your main branch, Vercel redeploys automatically. You don't have to do anything else.
+Add your live Vercel URL to your Appwrite project settings as an allowed platform so requests aren't blocked.
 
 ---
 
-**Next**: Final Project Planning
+**You're done. Share the link.**

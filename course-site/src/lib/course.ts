@@ -167,6 +167,7 @@ const courseSource: { title: string; subtitle: string; modules: ModuleSource[] }
         { slug: 'session-08', source: 'session-08.md', number: '2.6' },
         { slug: 'session-09', source: 'session-09.md', number: '2.7' },
         { slug: 'session-10', source: 'session-10.md', number: '2.8' },
+        { slug: 'session-12', source: 'session-12.md', number: '2.9' },
       ],
     },
     {
@@ -177,7 +178,6 @@ const courseSource: { title: string; subtitle: string; modules: ModuleSource[] }
       image: withBase('/assets/screenshots/kanban/kanban.png'),
       lessons: [
         { slug: 'session-11', source: 'session-11.md', number: '3.1', image: withBase('/assets/screenshots/kanban/kanban.png') },
-        { slug: 'session-12', source: 'session-12.md', number: '3.2' },
       ],
     },
     {
